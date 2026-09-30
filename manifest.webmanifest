@@ -1,0 +1,32 @@
+{
+  "name": "阶梯递进力量计划生成器",
+  "short_name": "阶梯递进",
+  "description": "基于 10RM 开把重量，以「递增金字塔 + 双重递进」编排力量周期计划，并按每次训练的实际结果自动进退阶；卧推与深蹲各自独立。数据仅保存在本机浏览器。",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f1115",
+  "theme_color": "#0f1115",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
