@@ -132,6 +132,26 @@
 | `icon-192.png` / `icon-512.png` / `apple-touch-icon.png` | 应用图标 |
 | `screenshot.png` | 上面那张界面预览图 |
 | `.nojekyll` | 关闭 GitHub Pages 的 Jekyll 处理 |
+| `示例备份.json` | 示例备份文件，可用来试一遍导入流程（仅离线包内含） |
+
+## 自行部署（静态托管）
+
+本仓库已部署在 GitHub Pages。如果你想部署到自己的空间：把本目录下的
+`index.html`、`manifest.webmanifest`、`sw.js`、三个图标和 `.nojekyll`
+上传到任意静态托管即可 —— 全部是纯静态文件，**不需要服务器、不需要数据库、不需要后端**；
+访问者的记录只存在他自己浏览器里，托管方看不到任何数据。
+
+> `sw.js` 与 manifest 只在 **https 或 localhost** 下生效。用 `file://` 直接打开时，
+> 程序会自动跳过 Service Worker，功能不受影响，只是没有离线缓存与安装入口。
+
+三种免费方案：
+
+- **Netlify Drop**（最快，约 1 分钟）：打开 <https://app.netlify.com/drop>，把文件拖进去即得网址
+- **Cloudflare Pages**（国内访问相对稳）：<https://dash.cloudflare.com> → Workers & Pages → Create → Pages → Upload assets
+- **GitHub Pages**：推到仓库 → Settings → Pages → Source 选 `Deploy from a branch` → 分支 `main`、目录 `/ (root)` → Save
+
+部署后自检：手机打开网址 → 浏览器菜单里应出现「添加到主屏幕」→ 添加后从图标进入应没有地址栏
+→ 打开飞行模式后仍能进入（说明离线缓存生效）。
 
 ## 技术
 
