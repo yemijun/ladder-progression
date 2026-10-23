@@ -7,13 +7,24 @@
 
 <meta name="description" content="基于 10RM 开把重量，以「递增金字塔 + 双重递进」编排力量周期计划，并按每次训练的实际结果自动进退阶；卧推与深蹲各自独立。数据仅保存在本机浏览器。">
 <meta name="keywords" content="力量训练,递增金字塔,双重递进,10RM,卧推,深蹲,进退阶">
-<meta name="author" content="阶梯递进力量计划生成器 v1.2.0 (Ladder Progression Strength Planner)">
-<meta name="theme-color" content="#111a18" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#f5f6f2" media="(prefers-color-scheme: light)">
-<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNGY4Y2ZmIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMzNkNjlmIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIzMiIgeT0iNDUiIGZvbnQtc2l6ZT0iMzgiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjZmZmZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7ov5s8L3RleHQ+PC9zdmc+">
+<meta name="author" content="阶梯递进力量计划生成器 v1.3.0 (Ladder Progression Strength Planner)">
+<meta name="theme-color" id="themeColor" content="#f5f6f2">
+<link rel="icon" type="image/svg+xml" href="./icon.svg?v=1.3.0">
 
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=1.3.0">
+<link rel="apple-touch-icon" sizes="167x167" href="./apple-touch-icon-167.png?v=1.3.0">
+<link rel="apple-touch-icon" sizes="152x152" href="./apple-touch-icon-152.png?v=1.3.0">
+<script>
+/* 在首次绘制前解析主题，避免深色设备出现浅色闪屏。 */
+(function(){
+  let mode = 'auto';
+  try { mode = localStorage.getItem('tp-theme') || 'auto'; } catch (e) {}
+  const dark = mode === 'dark' || (mode !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  document.getElementById('themeColor').setAttribute('content', dark ? '#111a18' : '#f5f6f2');
+})();
+</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -460,13 +471,15 @@ input[type=number],input[type=text],select{padding:11px 12px;background:var(--bg
   <header class="top">
     <div class="hdrow">
       <div class="brand">
-        <div class="logo">进</div>
+        <img class="logo" src="./icon.svg?v=1.3.0" alt="阶梯递进图标" width="44" height="44">
         <div>
           <h1>阶梯递进 <span class="brand-en">LADDER PROGRESSION</span></h1>
           <div class="sub">你的个人力量训练工作台</div>
         </div>
       </div>
-      <button id="btnTheme" class="theme-btn no-print">浅色模式</button>
+      <select id="btnTheme" class="theme-btn no-print" aria-label="配色模式">
+        <option value="auto">跟随系统</option><option value="light">浅色模式</option><option value="dark">深色模式</option>
+      </select>
     </div>
   </header>
 
@@ -577,7 +590,7 @@ input[type=number],input[type=text],select{padding:11px 12px;background:var(--bg
   </div>
   </main>
 
-  <footer class="site-foot">阶梯递进力量计划生成器 v1.2.0 · Ladder Progression · 更新于 2026-10-24 · 训练记录与历史轮次仅保存在本机浏览器，不会上传到任何服务器</footer>
+  <footer class="site-foot">阶梯递进力量计划生成器 v1.3.0 · Ladder Progression · 更新于 2026-10-24 · 训练记录与历史轮次仅保存在本机浏览器，不会上传到任何服务器</footer>
 
 </div>
 
@@ -1682,7 +1695,7 @@ function applySettingsToInputs(s){
 function collectBackup(){
   const settings = {};
   SETTING_IDS.forEach(id => { const el = $(id); if (el) settings[id] = el.value; });
-  settings.theme = currentTheme();
+  settings.theme = themeMode;
   return {
     app: '阶梯递进力量计划生成器',
     version: BACKUP_VERSION,
@@ -1719,7 +1732,7 @@ function exportBackup(){
 /* 覆盖导入时才套用备份里的设定，合并导入保持当前设定不变 */
 function applyBackupSettings(s){
   applySettingsToInputs(s);
-  if (s.theme === 'light' || s.theme === 'dark'){
+  if (['auto', 'light', 'dark'].includes(s.theme)){
     applyTheme(s.theme);
     try { localStorage.setItem(THEME_KEY, s.theme); } catch (e) {}
   }
@@ -1878,27 +1891,31 @@ function renderAll(){
    主题切换
    ========================================================================== */
 const THEME_KEY = 'tp-theme';
-const THEME_NAME = { dark:'深色模式', light:'浅色模式' };
+const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
+let themeMode = 'auto';
 
 function currentTheme(){
   return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
 }
 function applyTheme(t){
-  if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
-  else document.documentElement.removeAttribute('data-theme');
-  /* 按钮显示的是「点击后会切换到的模式」 */
-  $('btnTheme').textContent = THEME_NAME[t === 'light' ? 'dark' : 'light'];
-  $('btnTheme').setAttribute('aria-label', '切换到' + THEME_NAME[t === 'light' ? 'dark' : 'light']);
+  themeMode = ['auto', 'light', 'dark'].includes(t) ? t : 'auto';
+  const resolved = themeMode === 'auto' ? (systemTheme.matches ? 'dark' : 'light') : themeMode;
+  document.documentElement.setAttribute('data-theme', resolved);
+  $('themeColor').setAttribute('content', resolved === 'dark' ? '#111a18' : '#f5f6f2');
+  $('btnTheme').value = themeMode;
 }
 (function initTheme(){
-  let saved = 'dark';
-  try { saved = localStorage.getItem(THEME_KEY) || 'light'; } catch (e) { saved = 'light'; }
+  let saved = 'auto';
+  try { saved = localStorage.getItem(THEME_KEY) || 'auto'; } catch (e) {}
   applyTheme(saved);
-  $('btnTheme').addEventListener('click', () => {
-    const next = currentTheme() === 'light' ? 'dark' : 'light';
+  $('btnTheme').addEventListener('change', () => {
+    const next = $('btnTheme').value;
     applyTheme(next);
     try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
   });
+  const followSystem = () => { if (themeMode === 'auto') applyTheme('auto'); };
+  if (systemTheme.addEventListener) systemTheme.addEventListener('change', followSystem);
+  else systemTheme.addListener(followSystem);
 })();
 
 /* ==========================================================================
