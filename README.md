@@ -12,7 +12,24 @@
   <p><img alt="版本" src="https://img.shields.io/badge/version-1.5.0-276548"> <img alt="零依赖" src="https://img.shields.io/badge/dependencies-0-276548"> <img alt="本机存储" src="https://img.shields.io/badge/data-local_only-276548"> <img alt="MIT" src="https://img.shields.io/badge/license-MIT-276548"></p>
 </div>
 
-![训练工作台预览](docs/preview.png)
+## 界面预览
+
+<table>
+  <tr>
+    <th width="28%">手机版 · 深色模式</th>
+    <th width="72%">电脑版 · 浅色模式</th>
+  </tr>
+  <tr>
+    <td align="center" valign="top">
+      <a href="docs/preview-mobile.jpg"><img src="docs/preview-mobile.jpg" width="240" alt="手机版：紧凑训练界面与底部导航"></a>
+    </td>
+    <td align="center" valign="top">
+      <a href="docs/preview-desktop.jpg"><img src="docs/preview-desktop.jpg" width="800" alt="电脑版：宽屏训练工作台"></a>
+    </td>
+  </tr>
+</table>
+
+点击截图可查看原图。两端均支持跟随系统、浅色和深色模式。
 
 ## 把精力留给训练
 
@@ -92,7 +109,7 @@ ladder-progression/
 │   │   ├── theme-init.js      # 首次绘制前解析主题
 │   │   └── register-sw.js     # 注册离线缓存
 │   └── icons/                 # SVG 与安卓 / 苹果图标
-├── docs/preview.png            # README 界面预览
+├── docs/                      # README 手机及电脑界面截图
 ├── scripts/
 │   ├── serve.cjs              # 本地静态预览服务器
 │   └── generate-icons.ps1     # Windows 图标重建脚本
@@ -140,3 +157,4 @@ node --test tests/*.test.cjs
 ## 许可与声明
 
 代码采用 [MIT License](LICENSE)。训练模板来源见上文；本工具仅供参考，不构成训练或医疗建议，请根据自身情况评估训练强度，动作标准优先于重量。
+
