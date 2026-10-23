@@ -7,21 +7,22 @@
 
 <meta name="description" content="基于 10RM 开把重量，以「递增金字塔 + 双重递进」编排力量周期计划，并按每次训练的实际结果自动进退阶；卧推与深蹲各自独立。数据仅保存在本机浏览器。">
 <meta name="keywords" content="力量训练,递增金字塔,双重递进,10RM,卧推,深蹲,进退阶">
-<meta name="author" content="阶梯递进力量计划生成器 v1.4.0 (Ladder Progression Strength Planner)">
-<meta name="theme-color" id="themeColor" content="#f5f6f2">
+<meta name="author" content="阶梯递进力量计划生成器 v1.5.0 (Ladder Progression Strength Planner)">
+<meta name="theme-color" id="themeColor" content="#f5f5f2">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" type="image/svg+xml" href="./assets/icons/icon.svg?v=1.4.0">
+<link rel="icon" type="image/svg+xml" href="./assets/icons/icon.svg?v=1.5.0">
 
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png?v=1.4.0">
-<link rel="apple-touch-icon" sizes="167x167" href="./assets/icons/apple-touch-icon-167.png?v=1.4.0">
-<link rel="apple-touch-icon" sizes="152x152" href="./assets/icons/apple-touch-icon-152.png?v=1.4.0">
-<script src="./assets/js/theme-init.js?v=1.4.0"></script>
+<link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png?v=1.5.0">
+<link rel="apple-touch-icon" sizes="167x167" href="./assets/icons/apple-touch-icon-167.png?v=1.5.0">
+<link rel="apple-touch-icon" sizes="152x152" href="./assets/icons/apple-touch-icon-152.png?v=1.5.0">
+<script src="./assets/js/theme-init.js?v=1.5.0"></script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="阶梯递进">
-<link rel="stylesheet" href="./assets/css/app.css?v=1.4.0">
+<link rel="stylesheet" href="./assets/css/app.css?v=1.5.0">
+<link rel="stylesheet" href="./assets/css/workspace.css?v=1.5.0">
 
 </head>
 <body>
@@ -30,7 +31,7 @@
   <header class="top">
     <div class="hdrow">
       <div class="brand">
-        <img class="logo" src="./assets/icons/icon.svg?v=1.4.0" alt="阶梯递进图标" width="44" height="44">
+        <img class="logo" src="./assets/icons/icon.svg?v=1.5.0" alt="阶梯递进图标" width="44" height="44">
         <div>
           <h1>阶梯递进 <span class="brand-en">LADDER PROGRESSION</span></h1>
           <div class="sub">你的个人力量训练工作台</div>
@@ -42,19 +43,18 @@
     </div>
   </header>
 
-  <section class="intro no-print">
-    <div><div class="eyebrow">TRAIN SMART. GROW STRONG.</div><h2>每一次训练，<br>都向前一步<span>。</span></h2><p>从你的 10RM 出发，让计划跟上你的进步。<br>专注完成今天的训练，下一步交给阶梯递进。</p><div class="intro-badges"><span>本机保存</span><span>离线可用</span><span>双动作独立递进</span></div></div>
-    <div class="ladder-art" aria-hidden="true"><span class="art-label">ONE STEP AT A TIME</span><div class="art-bars"><i></i><i></i><i></i><i></i></div><span class="art-bottom">01 — 04 <b>持续积累，逐级突破 ↗</b></span></div>
-  </section>
+  <details class="training-management no-print">
+    <summary>训练管理 <span id="enabledSummary">卧推 · 深蹲</span></summary>
   <section class="lift-controls no-print" aria-label="选择训练动作">
     <div><b>训练动作</b><span>只显示你需要的计划，关闭后保留全部记录。</span></div>
     <label class="lift-switch"><input type="checkbox" id="enable-bench" role="switch" checked><span>卧推</span></label>
     <label class="lift-switch"><input type="checkbox" id="enable-squat" role="switch" checked><span>深蹲</span></label>
   </section>
   <section class="hero" id="hero" aria-label="训练概览"></section>
+  </details>
 
-  <section class="rest-timer no-print" aria-label="组间休息计时器">
-    <div><b>组间休息</b><span id="timerHint">完成一组，给身体 3 分钟恢复</span></div>
+  <section class="rest-timer no-print" aria-label="组间休息计时器" hidden>
+    <div><b>组间休息</b><span id="timerHint">完成一组，休息 3 分钟</span></div>
     <output id="timerClock" aria-label="剩余休息时间">03:00</output>
     <button id="timerStart">开始休息</button><button id="timerReset" aria-label="重置休息计时器">重置</button>
   </section>
@@ -64,8 +64,8 @@
   <nav class="tabs no-print" id="tabs" aria-label="训练工作区">
     <button class="tab active" data-tab="bench">卧推</button>
     <button class="tab" data-tab="squat">深蹲</button>
-    <button class="tab" data-tab="history">历史轮次</button>
-    <button class="tab" data-tab="export">导出</button>
+    <button class="tab" data-tab="history">历史</button>
+    <button class="tab" data-tab="export">备份与导出</button>
   </nav>
 
   <main>
@@ -154,13 +154,13 @@
   </div>
   </main>
 
-  <footer class="site-foot">阶梯递进力量计划生成器 v1.4.0 · Ladder Progression · 更新于 2026-10-24 · 训练记录与历史轮次仅保存在本机浏览器，不会上传到任何服务器</footer>
+  <footer class="site-foot">阶梯递进力量计划生成器 v1.5.0 · Ladder Progression · 更新于 2026-10-24 · 训练记录与历史轮次仅保存在本机浏览器，不会上传到任何服务器</footer>
 
 </div>
 
-<script src="./assets/js/core.js?v=1.4.0"></script>
-<script src="./assets/js/app.js?v=1.4.0"></script>
+<script src="./assets/js/core.js?v=1.5.0"></script>
+<script src="./assets/js/app.js?v=1.5.0"></script>
 
-<script src="./assets/js/register-sw.js?v=1.4.0"></script>
+<script src="./assets/js/register-sw.js?v=1.5.0"></script>
 </body>
 </html>

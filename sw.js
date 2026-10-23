@@ -1,11 +1,11 @@
-/* 阶梯递进力量计划生成器 v1.4.0 · 页面联网优先，断网回退缓存 */
-const CACHE = 'ladder-progression-v1.4.0';
+/* 阶梯递进力量计划生成器 v1.5.0 · 页面联网优先，断网回退缓存 */
+const CACHE = 'ladder-progression-v1.5.0';
 const ASSETS = ['./', './index.html', './manifest.webmanifest',
-  './assets/css/app.css?v=1.4.0', './assets/js/theme-init.js?v=1.4.0',
-  './assets/js/core.js?v=1.4.0', './assets/js/app.js?v=1.4.0', './assets/js/register-sw.js?v=1.4.0',
-  './assets/icons/icon.svg?v=1.4.0', './assets/icons/icon-192.png?v=1.4.0', './assets/icons/icon-512.png?v=1.4.0',
-  './assets/icons/icon-maskable-512.png?v=1.4.0', './assets/icons/apple-touch-icon.png?v=1.4.0',
-  './assets/icons/apple-touch-icon-167.png?v=1.4.0', './assets/icons/apple-touch-icon-152.png?v=1.4.0'];
+  './assets/css/app.css?v=1.5.0', './assets/css/workspace.css?v=1.5.0', './assets/js/theme-init.js?v=1.5.0',
+  './assets/js/core.js?v=1.5.0', './assets/js/app.js?v=1.5.0', './assets/js/register-sw.js?v=1.5.0',
+  './assets/icons/icon.svg?v=1.5.0', './assets/icons/icon-192.png?v=1.5.0', './assets/icons/icon-512.png?v=1.5.0',
+  './assets/icons/icon-maskable-512.png?v=1.5.0', './assets/icons/apple-touch-icon.png?v=1.5.0',
+  './assets/icons/apple-touch-icon-167.png?v=1.5.0', './assets/icons/apple-touch-icon-152.png?v=1.5.0'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));

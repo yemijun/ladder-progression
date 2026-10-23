@@ -28,7 +28,7 @@ test('new users follow system and react live to changes',()=>{
   assert.equal(p.attributes['data-theme'],'dark');
   p.system(false);
   assert.equal(p.attributes['data-theme'],'light');
-  assert.equal(p.attributes.color,'#f5f6f2');
+  assert.equal(p.attributes.color,'#f5f5f2');
 });
 test('manual mode overrides system, auto restores tracking and persists choice',()=>{
   const p=page();
@@ -60,5 +60,5 @@ test('Android and Apple icon declarations point at correctly sized PNGs',()=>{
   }
   assert.ok(manifest.icons.some(i=>i.purpose==='maskable' && i.src.includes('maskable')));
   assert.ok(html.includes('sizes="180x180"'));
-  assert.ok(html.includes('src="./assets/icons/icon.svg?v=1.4.0"'));
+  assert.ok(html.includes('src="./assets/icons/icon.svg?v=1.5.0"'));
 });

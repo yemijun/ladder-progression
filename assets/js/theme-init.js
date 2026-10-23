@@ -6,5 +6,5 @@
   const dark = mode === 'dark' || (mode !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
   document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
   document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
-  document.getElementById('themeColor').setAttribute('content', dark ? '#111a18' : '#f5f6f2');
+  document.getElementById('themeColor').setAttribute('content', dark ? '#121212' : '#f5f5f2');
 })();

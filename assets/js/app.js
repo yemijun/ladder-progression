@@ -118,25 +118,79 @@ function workspaceHtml(k){
   '</section>' +
 
   '<section class="card mod k-log" id="mod-log-' + k + '">' +
-    '<h2>' + name + ' · 训练记录与调整</h2>' +
-    '<p class="hint">每次训练结束后录入实际完成次数，后续日程随即重算：达标进入下一档，未达标下一次重复同一档，同一档连续未达标则下调重量并从本小循环开把档重走。</p>' +
+    '<h2>' + name + ' · 今日训练</h2>' +
     '<div id="log-' + k + '"></div>' +
-    '<div class="blocktitle" style="margin-top:20px">执行规则</div>' +
-    '<ol class="rules" id="rules-' + k + '"></ol>' +
+    '<details class="setup-guide execution-rules"><summary>查看执行规则</summary>' +
+    '<ol class="rules" id="rules-' + k + '"></ol></details>' +
   '</section>';
 }
+
+/* WORKSPACE-VIEWS-START */
+const VIEW_NAMES = ['train', 'plan', 'settings'];
+const currentViews = { bench:'train', squat:'train' };
+try {
+  const saved = JSON.parse(localStorage.getItem('tp-views') || 'null');
+  ALL_LIFTS.forEach(k => { if (saved && VIEW_NAMES.includes(saved[k])) currentViews[k] = saved[k]; });
+} catch (e) {}
+function switchWorkspaceView(k, view){
+  currentViews[k] = VIEW_NAMES.includes(view) ? view : 'train';
+  const ws = $('ws-' + k);
+  ws.querySelectorAll('[data-viewpane]').forEach(panel => { panel.hidden = panel.dataset.viewpane !== currentViews[k]; });
+  ws.querySelectorAll('[data-view]').forEach(button => {
+    button.setAttribute('aria-pressed', String(button.dataset.view === currentViews[k]));
+  });
+  try { localStorage.setItem('tp-views', JSON.stringify(currentViews)); } catch (e) {}
+  syncTrainingChrome();
+}
+function syncTrainingChrome(){
+  const active = document.querySelector('.tab.active');
+  const k = active && active.getAttribute('data-tab');
+  const timer = document.querySelector('.rest-timer');
+  const visible = ALL_LIFTS.includes(k) && currentViews[k] === 'train';
+  timer.hidden = !visible;
+  if (visible) $('timer-slot-' + k).appendChild(timer);
+}
+/* WORKSPACE-VIEWS-END */
 
 (function buildWorkspaces(){
   ALL_LIFTS.forEach(k => {
     const ws = $('ws-' + k);
     ws.innerHTML = workspaceHtml(k);
-    ws.prepend($('mod-log-' + k));
     const nav = document.createElement('nav');
     nav.className = 'workspace-nav no-print';
     nav.setAttribute('aria-label', LIFT_NAME[k] + '页面导航');
-    nav.innerHTML = [['log','训练打卡'],['setup','计划设置'],['cycles','循环编排'],['schedule','训练日程'],['round','本轮进度']]
-      .map(([id, label]) => '<a href="#mod-' + id + '-' + k + '">' + label + '</a>').join('');
+    nav.innerHTML = [['train','今日训练'],['plan','周期计划'],['settings','参数设置']]
+      .map(([id, label]) => '<button data-view="' + id + '" aria-pressed="false" aria-controls="view-' + k + '-' + id + '">' + label + '</button>').join('');
     ws.prepend(nav);
+    [['train',['log','round']],['plan',['cycles','schedule']],['settings',['setup']]].forEach(([view, ids]) => {
+      const panel = document.createElement('div');
+      panel.className = 'workspace-view';
+      panel.id = 'view-' + k + '-' + view;
+      panel.dataset.viewpane = view;
+      ids.forEach(id => panel.appendChild($('mod-' + id + '-' + k)));
+      if (view === 'train'){
+        const slot = document.createElement('div');
+        slot.id = 'timer-slot-' + k;
+        panel.insertBefore(slot, panel.lastElementChild);
+      }
+      ws.appendChild(panel);
+    });
+    nav.addEventListener('click', e => {
+      const button = e.target.closest('[data-view]');
+      if (button){
+        switchWorkspaceView(k, button.dataset.view);
+        window.scrollTo({top:0, behavior:'instant'});
+      }
+    });
+    const makeFold = (node, title) => {
+      const fold = document.createElement('details');
+      fold.className = 'section-fold';
+      const summary = document.createElement('summary');
+      summary.textContent = title;
+      node.before(fold); fold.append(summary, node);
+    };
+    makeFold($('mod-schedule-' + k), '查看完整周训练日程');
+    makeFold($('refBox-' + k), '查看判定标准与计算示例');
     const guide = $('mod-setup-' + k).querySelector('.guide');
     const heading = guide.previousElementSibling;
     const details = document.createElement('details');
@@ -149,6 +203,7 @@ function workspaceHtml(k){
       const label = field.querySelector('label'), input = field.querySelector('input,select');
       if (label && input) label.htmlFor = input.id;
     });
+    switchWorkspaceView(k, currentViews[k]);
   });
 })();
 
@@ -330,6 +385,8 @@ function logItemHtml(r, unit, extraChip){
 function renderLogFor(k, unit, prog, A){
   const d = prog.decided, log = workoutLog[k] || [];
   const drop = LIFT_SPECS[k].regressDrop;
+  const previousHistory = $('log-' + k).querySelector('.record-history');
+  const historyOpen = previousHistory && previousHistory.open;
 
   const next = (A.perWeek === 0)
     ? '<div class="empty-note">该动作在本轮设为「暂停」，不参与推进。把「每周训练次数」改回 1–3 次后即可继续记录。</div>'
@@ -340,15 +397,15 @@ function renderLogFor(k, unit, prog, A){
           '<div class="nextbig">' + A.next.weight + '<small>' + unit + '</small> × ' + A.next.sets + ' 组 × ' + A.next.reps + ' 次</div>' +
         '</div>' +
         '<div class="logrow no-export">' +
-          '<div class="field"><label for="actual-' + k + '">实际完成次数（最难一组）</label>' +
+          '<div class="field"><label for="actual-' + k + '">最难一组完成次数</label>' +
             '<input type="number" id="actual-' + k + '" min="0" max="99" step="1" value="' + A.next.reps + '">' +
           '</div>' +
           '<button class="primary" data-log="' + k + '">记录本次训练</button>' +
         '</div>' +
       '</div>' +
       '<div class="logstat">' +
-        '<span>达到 <b>' + A.next.reps + '</b> 次 → 下次进入下一档</span>' +
-        '<span>少于 <b>' + A.next.reps + '</b> 次 → 下次重做本档</span>' +
+        '<span>达标 → 下一档</span>' +
+        '<span>未达标 → 重试本档</span>' +
       '</div>'
     : '<div class="empty-note">四个小循环已全部执行完毕。可重新测定 10RM 与断层，开始新一轮。</div>';
 
@@ -380,19 +437,19 @@ function renderLogFor(k, unit, prog, A){
       '<div class="logstat">' +
         '<span>已记录 <b>' + A.logged + '</b> 次</span>' +
         '<span>达标 <b>' + A.doneCount + '</b> 次</span>' +
-        '<span>未达标 <b>' + A.failedCount + '</b> 次</span>' +
-        '<span>重量下调 <b>' + A.regressCount + '</b> 次</span>' +
-        '<span>剩余 <b>' + (A.timeline.length - A.logged) + '</b> 档</span>' +
+        (A.failedCount ? '<span>未达标 <b>' + A.failedCount + '</b> 次</span>' : '') +
+        (A.regressCount ? '<span>下调 <b>' + A.regressCount + '</b> 次</span>' : '') +
       '</div>' +
       (log.length
-        ? '<div class="tbl only-desktop" style="margin-top:14px"><table style="min-width:560px">' +
+        ? '<details class="record-history"' + (historyOpen ? ' open' : '') + '><summary>本轮训练记录 · ' + log.length + ' 次</summary>' +
+          '<div class="tbl only-desktop" style="margin-top:14px"><table style="min-width:560px">' +
             '<thead><tr><th>时间</th><th>小循环</th><th>要求</th><th>实际</th><th>结果</th></tr></thead>' +
             '<tbody>' + rows + '</tbody></table></div>' +
           '<div class="only-mobile" style="margin-top:12px">' + mobileRows + '</div>' +
           '<div class="actions no-export" style="margin-top:12px">' +
             '<button data-undo="' + k + '">撤销最后一次</button>' +
             '<button data-clear="' + k + '">清空' + d.name + '记录</button>' +
-          '</div>'
+          '</div></details>'
         : '<div class="empty-note">尚无记录，完成一次训练后回来录入即可。</div>') +
     '</div>';
 }
@@ -462,6 +519,7 @@ function availableTab(name){
   return visibleLifts().includes(name) ? name : (visibleLifts()[0] || 'history');
 }
 function syncLiftVisibility(){
+  $('enabledSummary').textContent = visibleLifts().map(k => LIFT_NAME[k]).join(' · ') || '暂未启用动作';
   ALL_LIFTS.forEach(k => {
     $('enable-' + k).checked = enabledLifts[k];
     document.querySelector('[data-tab="' + k + '"]').hidden = !enabledLifts[k];
@@ -498,6 +556,7 @@ function switchTab(name){
   [].slice.call(document.querySelectorAll('.tabpane'))
     .forEach(p => p.classList.toggle('active', p.getAttribute('data-pane') === name));
   try { localStorage.setItem(TAB_KEY, name); } catch (e) {}
+  syncTrainingChrome();
 }
 
 /* ==========================================================================
@@ -1114,7 +1173,7 @@ function applyTheme(t){
   const resolved = themeMode === 'auto' ? (systemTheme.matches ? 'dark' : 'light') : themeMode;
   document.documentElement.setAttribute('data-theme', resolved);
   document.documentElement.style.colorScheme = resolved;
-  $('themeColor').setAttribute('content', resolved === 'dark' ? '#111a18' : '#f5f6f2');
+  $('themeColor').setAttribute('content', resolved === 'dark' ? '#121212' : '#f5f5f2');
   $('btnTheme').value = themeMode;
 }
 (function initTheme(){
@@ -1322,13 +1381,19 @@ async function exportPng(){
   }
 }
 
+let printDetails = [];
 function exportPrint(){
   const mods = selectedModules();
+  if (!mods.length){ setMsg('请先选择需要打印的模块。', 'err'); return; }
+  printDetails = Array.from(document.querySelectorAll('.workspace-view details')).map(detail => [detail, detail.open]);
+  printDetails.forEach(([detail]) => { detail.open = true; });
   document.querySelectorAll('.mod').forEach(m => m.classList.toggle('hide-print', mods.indexOf(m) < 0));
   window.print();
 }
 window.addEventListener('afterprint', () => {
   document.querySelectorAll('.mod').forEach(m => m.classList.remove('hide-print'));
+  printDetails.forEach(([detail, open]) => { detail.open = open; });
+  printDetails = [];
 });
 
 function exportCsv(){
@@ -1526,7 +1591,10 @@ $('importFile').addEventListener('change', e => {
 });
 
 [].slice.call(document.querySelectorAll('.tab')).forEach(b => {
-  b.addEventListener('click', () => switchTab(b.getAttribute('data-tab')));
+  b.addEventListener('click', () => {
+    switchTab(b.getAttribute('data-tab'));
+    window.scrollTo({top:0, behavior:'instant'});
+  });
 });
 
 function renderExportModules(){

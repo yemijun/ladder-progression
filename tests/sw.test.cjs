@@ -13,7 +13,7 @@ function worker(online = true){
     URL, Response,
     location:{origin:'https://example.com'},
     self:{registration:{scope:'https://example.com/ladder/'},addEventListener:(name,fn)=>{handlers[name]=fn},clients:{claim:async()=>{}},skipWaiting:async()=>{}},
-    caches:{open:async()=>cache,match:async()=>cached,keys:async()=>['ladder-progression-v1.1.0','ladder-progression-v1.2.0','ladder-progression-v1.3.0','ladder-progression-v1.4.0','other-app'],delete:async key=>deleted.push(key)},
+    caches:{open:async()=>cache,match:async()=>cached,keys:async()=>['ladder-progression-v1.1.0','ladder-progression-v1.2.0','ladder-progression-v1.3.0','ladder-progression-v1.4.0','ladder-progression-v1.5.0','other-app'],delete:async key=>deleted.push(key)},
     fetch:async()=>{if(!online) throw new Error('offline');return response}
   });
   const request = (url,mode='navigate')=>{
@@ -41,5 +41,5 @@ test('activation only deletes this app old caches',async()=>{
   const w=worker();let task;
   w.handlers.activate({waitUntil:promise=>{task=promise}});
   await task;
-  assert.deepEqual(w.deleted,['ladder-progression-v1.1.0','ladder-progression-v1.2.0','ladder-progression-v1.3.0']);
+  assert.deepEqual(w.deleted,['ladder-progression-v1.1.0','ladder-progression-v1.2.0','ladder-progression-v1.3.0','ladder-progression-v1.4.0']);
 });
