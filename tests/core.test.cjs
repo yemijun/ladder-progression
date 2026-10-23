@@ -3,9 +3,9 @@ const vm = require('node:vm');
 const assert = require('node:assert/strict');
 const { test } = require('node:test');
 const html = readFileSync(require('node:path').join(__dirname, '..', 'index.html'), 'utf8');
-const core = html.split('CORE-START')[1].split('CORE-END')[0];
+const core = readFileSync(require('node:path').join(__dirname, '..', 'assets/js/core.js'), 'utf8');
 const context = vm.createContext({});
-vm.runInContext(core.slice(core.indexOf('const LIFT_SPECS'), core.lastIndexOf('/*')), context);
+vm.runInContext(core, context);
 const run = expression => vm.runInContext(expression, context);
 test('bench and squat thresholds remain independent', () => {
   assert.equal(run("decideMode('bench',100,7,'auto','auto','kg').mode"), 'regress');
@@ -48,6 +48,8 @@ test('backup validation accepts old records and rejects malformed or executable 
   assert.throws(() => run("validateBackup({logs:{bench:[{...backup.logs.bench[0],weight:'100'}]}})"));
   assert.throws(() => run("validateBackup({archives:[{id:'invalid',lifts:[]}]})"));
 });
-test('all inline scripts compile', () => {
-  for (const [, script] of html.matchAll(/<script>([\s\S]*?)<\/script>/g)) new vm.Script(script);
+test('all application scripts compile', () => {
+  for (const [, src] of html.matchAll(/<script src="([^"]+)"/g)) {
+    new vm.Script(readFileSync(require('node:path').join(__dirname, '..', src.split('?')[0]),'utf8'));
+  }
 });

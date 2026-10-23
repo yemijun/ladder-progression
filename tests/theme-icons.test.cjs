@@ -5,7 +5,8 @@ const path = require('node:path');
 const vm = require('node:vm');
 const root = path.join(__dirname,'..');
 const html = fs.readFileSync(path.join(root,'index.html'),'utf8');
-const theme = html.slice(html.indexOf("const THEME_KEY ="), html.indexOf('const EXPORT_DARK_VARS'));
+const app = fs.readFileSync(path.join(root,'assets/js/app.js'),'utf8');
+const theme = app.slice(app.indexOf("const THEME_KEY ="), app.indexOf('const EXPORT_DARK_VARS'));
 function page(saved, dark = false){
   const attributes = {}, listeners = {}, storage = new Map(saved ? [['tp-theme', saved]] : []);
   const media = {matches:dark, addEventListener:(name,fn)=>{listeners.system=fn}};
@@ -13,7 +14,7 @@ function page(saved, dark = false){
   const meta = {setAttribute:(key,value)=>{attributes.color=value}};
   const context = vm.createContext({
     window:{matchMedia:()=>media},
-    document:{documentElement:{setAttribute:(key,value)=>{attributes[key]=value},getAttribute:key=>attributes[key]}},
+    document:{documentElement:{style:{},setAttribute:(key,value)=>{attributes[key]=value},getAttribute:key=>attributes[key]}},
     $:id=>id==='btnTheme'?select:meta,
     localStorage:{getItem:key=>storage.get(key),setItem:(key,value)=>storage.set(key,value)}
   });
@@ -48,9 +49,9 @@ test('existing explicit preferences are preserved, invalid ones use auto',()=>{
 test('Android and Apple icon declarations point at correctly sized PNGs',()=>{
   const manifest=JSON.parse(fs.readFileSync(path.join(root,'manifest.webmanifest'),'utf8'));
   const icons=manifest.icons.concat([
-    {src:'apple-touch-icon.png',sizes:'180x180'},
-    {src:'apple-touch-icon-167.png',sizes:'167x167'},
-    {src:'apple-touch-icon-152.png',sizes:'152x152'}
+    {src:'assets/icons/apple-touch-icon.png',sizes:'180x180'},
+    {src:'assets/icons/apple-touch-icon-167.png',sizes:'167x167'},
+    {src:'assets/icons/apple-touch-icon-152.png',sizes:'152x152'}
   ]);
   for(const icon of icons){
     const data=fs.readFileSync(path.join(root,icon.src.split('?')[0]));
@@ -59,5 +60,5 @@ test('Android and Apple icon declarations point at correctly sized PNGs',()=>{
   }
   assert.ok(manifest.icons.some(i=>i.purpose==='maskable' && i.src.includes('maskable')));
   assert.ok(html.includes('sizes="180x180"'));
-  assert.ok(html.includes('src="./icon.svg?v=1.3.0"'));
+  assert.ok(html.includes('src="./assets/icons/icon.svg?v=1.4.0"'));
 });

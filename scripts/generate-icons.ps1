@@ -1,4 +1,4 @@
-# Rebuild PNGs from the same geometry as icon.svg. Windows / System.Drawing.
+# Rebuild PNGs from the same geometry as assets/icons/icon.svg. Windows / System.Drawing.
 Add-Type -AssemblyName System.Drawing
 $projectRoot = Split-Path -Parent $PSScriptRoot
 function Fill-RoundedRect($graphics, $brush, [single]$x, [single]$y, [single]$width, [single]$height, [single]$radius) {
@@ -42,6 +42,6 @@ foreach ($variant in $variants) {
   if (-not $variant.rounded) { $target.Clear([Drawing.ColorTranslator]::FromHtml('#183f30')) }
   $target.InterpolationMode = [Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
   $target.DrawImage($canvas, 0, 0, $variant.size, $variant.size)
-  $output.Save((Join-Path $projectRoot $variant.name), [Drawing.Imaging.ImageFormat]::Png)
+  $output.Save((Join-Path (Join-Path $projectRoot 'assets/icons') $variant.name), [Drawing.Imaging.ImageFormat]::Png)
   $target.Dispose(); $output.Dispose(); $g.Dispose(); $canvas.Dispose(); $background.Dispose()
 }
