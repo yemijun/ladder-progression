@@ -7,9 +7,9 @@
 
 <meta name="description" content="基于 10RM 开把重量，以「递增金字塔 + 双重递进」编排力量周期计划，并按每次训练的实际结果自动进退阶；卧推与深蹲各自独立。数据仅保存在本机浏览器。">
 <meta name="keywords" content="力量训练,递增金字塔,双重递进,10RM,卧推,深蹲,进退阶">
-<meta name="author" content="阶梯递进力量计划生成器 v1.1.0 (Ladder Progression Strength Planner)">
-<meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#f4f6f9" media="(prefers-color-scheme: light)">
+<meta name="author" content="阶梯递进力量计划生成器 v1.2.0 (Ladder Progression Strength Planner)">
+<meta name="theme-color" content="#111a18" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f5f6f2" media="(prefers-color-scheme: light)">
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNGY4Y2ZmIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMzNkNjlmIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9InVybCgjZykiLz48dGV4dCB4PSIzMiIgeT0iNDUiIGZvbnQtc2l6ZT0iMzgiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjZmZmZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7ov5s8L3RleHQ+PC9zdmc+">
 
 <link rel="manifest" href="./manifest.webmanifest">
@@ -418,6 +418,41 @@
     .tbl{overflow:visible}
   }
 </style>
+<style>
+/* v1.2: a calm, focused training workspace. All assets remain available offline. */
+:root{--bg:#111a18;--panel:#192420;--panel2:#202e28;--line:#33463c;--text:#edf3ed;--muted:#a1b5a9;--accent:#95d9aa;--accent2:#9acbb1;--radius:18px;--shadow:none;--hdrbg:rgba(17,26,24,.96)}
+html[data-theme="light"]{--bg:#f5f6f2;--panel:#fff;--panel2:#f1f4ef;--line:#dfe5dc;--text:#20382c;--muted:#66776b;--accent:#276548;--accent2:#39835b;--shadow:none;--hdrbg:rgba(245,246,242,.96)}
+html{scroll-behavior:smooth;scroll-padding-top:110px}
+.wrap{max-width:1200px;padding:0 32px 48px}
+header.top{padding:21px 0;margin-bottom:0}
+.logo{width:44px;height:44px;border-radius:13px;background:var(--accent);color:var(--bg);font-size:23px;box-shadow:none}
+h1{font-size:20px;letter-spacing:1px}.brand-en{font-size:10px;font-weight:600;letter-spacing:1.6px;margin-left:13px;color:var(--muted)}
+.sub{font-size:11px;letter-spacing:1px}.theme-btn{width:auto;background:transparent;font-size:12px;border-radius:999px;padding:9px 16px}.brand{flex:1}.brand h1{white-space:nowrap}
+.intro{display:grid;grid-template-columns:1.2fr 1fr;align-items:center;gap:40px;padding:54px 0 42px}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--accent);margin-bottom:19px}
+.intro h2{font-size:clamp(34px,4.5vw,52px);font-weight:750;line-height:1.25;letter-spacing:-1.6px;margin:0 0 20px}.intro h2>span{color:var(--accent2)}
+.intro p{font-size:14px;line-height:1.9;color:var(--muted);margin:0 0 20px}
+.intro-badges{display:flex;gap:16px;font-size:11px;color:var(--muted)}.intro-badges span::before{content:'✓';color:var(--accent2);margin-right:5px}
+.ladder-art{height:275px;border-radius:22px;background:#e7edde;position:relative;padding:26px 28px;overflow:hidden;color:#345a3f}
+.art-label{font-size:10px;letter-spacing:2px;font-weight:700}.art-bars{height:171px;display:flex;gap:12px;align-items:flex-end;padding:8px 12px 0}
+.art-bars i{display:block;flex:1;border-radius:7px 7px 0 0;background:#b5caa1;height:32%}.art-bars i:nth-child(2){height:52%;background:#92b27c}.art-bars i:nth-child(3){height:74%;background:#60874e}.art-bars i:nth-child(4){height:100%;background:#315f3e}
+.art-bottom{display:flex;justify-content:space-between;border-top:1px solid #b8c9ad;margin-top:12px;padding-top:12px;font-size:10px;letter-spacing:1px}.art-bottom b{font-weight:500;letter-spacing:0}
+.hero{background:transparent;padding:0;border:0;margin-bottom:24px}.hero h2{font-size:17px}.section-en{font-size:10px;letter-spacing:1.2px;font-weight:500;color:var(--muted);margin-left:10px}
+.hero-lifts{grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}.hero-lift{background:var(--panel);padding:22px;border-radius:16px;transition:transform .15s,border-color .15s}.hero-lift:hover{transform:translateY(-2px)}
+.hl-name{font-size:20px;margin-right:6px}.hl-prog b{font-size:25px;color:var(--text)}.hl-meta{line-height:1.9;margin-top:10px;font-size:12px}.hl-bar{margin-top:12px;height:5px;border:0}.hl-bar i,.progress i{background:var(--accent)}
+.rest-timer{display:flex;align-items:center;gap:12px;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px 20px;margin-bottom:28px}.rest-timer>div{display:flex;flex-direction:column;flex:1}.rest-timer b{font-size:13px}.rest-timer span{font-size:11px;color:var(--muted)}.rest-timer output{font-size:27px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:1px;margin-right:8px}.rest-timer button{padding:8px 14px;font-size:12px;background:var(--panel)}
+.tabs{border:0;gap:6px;background:var(--panel2);padding:5px;border-radius:13px;margin-bottom:15px;display:inline-flex}.tab{padding:10px 28px;font-size:13px;border:0!important;border-radius:9px;margin:0}.tab.active{background:var(--panel);box-shadow:0 2px 5px #00000008;color:var(--accent)}
+.workspace-nav{display:flex;gap:22px;flex-wrap:wrap;padding:3px 2px 18px}.workspace-nav a{color:var(--muted);font-size:12px;text-decoration:none}.workspace-nav a:hover{color:var(--accent)}
+section.card{padding:26px;margin-bottom:20px;border-radius:16px;scroll-margin-top:105px}section.card>h2{font-size:16px;padding-bottom:15px}section.card>h2::before{width:3px;height:15px}.hint{font-size:12px;line-height:1.9}
+.k-log .nextbox{padding:22px;background:var(--panel2);border-color:var(--line);border-radius:12px}.nextbig{font-size:29px!important;letter-spacing:-.5px}.nextmeta{font-size:12px}.liftbox{border-left:1px solid var(--line);padding:18px}.logstat{font-size:12px}.empty-note{font-size:12px}
+button.primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}html[data-theme="light"] button.primary{color:#fff}button,input,select,a{touch-action:manipulation}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--accent2);outline-offset:4px}input:focus-visible,select:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}button:disabled{cursor:wait;opacity:.6}
+input[type=number],input[type=text],select{padding:11px 12px;background:var(--bg)}.field label{font-size:12px}.cyc{padding:16px;border-radius:12px}.cyc h4{font-size:13px}.cyc .tier{padding:6px 0}.setup-guide{margin:20px 0 12px;border:1px solid var(--line);border-radius:10px;padding:12px 15px}.setup-guide summary{cursor:pointer;color:var(--accent);font-size:12px;font-weight:600}.setup-guide .guide{margin-top:16px}.app-notice{position:sticky;top:96px;z-index:61;padding:12px 18px;background:var(--panel2);border:1px solid var(--accent);border-radius:10px;font-size:13px;margin-bottom:15px}.app-notice.error{border-color:var(--danger);color:var(--danger)}[hidden]{display:none!important}
+.site-foot{font-size:11px;line-height:1.9}body>.wrap>footer{margin-top:34px}
+@media(min-width:900px){.g4{grid-template-columns:repeat(4,1fr)}.k-log .liftbox>.lhead{margin-bottom:0}}
+@media(max-width:640px){.wrap{padding:0 16px 32px}header.top{padding:14px 0}.brand{gap:9px}h1{font-size:18px}.brand-en{display:none}.logo{width:36px;height:36px;border-radius:10px;font-size:19px}.theme-btn{padding:7px 11px;font-size:11px}.hdrow{flex-wrap:nowrap;gap:8px}.intro{grid-template-columns:1fr;gap:24px;padding:30px 0}.intro h2{font-size:36px}.intro p{font-size:12px}.eyebrow{font-size:9px;margin-bottom:12px}.ladder-art{display:none}.intro-badges{gap:12px;font-size:10px}.hero-lifts{grid-template-columns:1fr;gap:10px}.hero-lift{padding:16px}.hero-top>.herometa{display:none}.hl-name{font-size:17px}.section-en{font-size:9px}.hero .herometa{font-size:11px}.rest-timer{gap:8px;padding:12px;margin-bottom:22px;flex-wrap:wrap}.rest-timer>div{min-width:120px}.rest-timer span{font-size:10px}.rest-timer output{font-size:24px}.rest-timer button{font-size:11px;padding:8px 10px}.tabs{display:flex;width:100%;gap:3px}.tab{flex:1;padding:10px 4px;font-size:12px}.workspace-nav{gap:16px;padding-bottom:16px}.workspace-nav a{font-size:11px}section.card{padding:17px;border-radius:14px}section.card>h2{font-size:15px}.liftbox{padding:12px}.k-log .nextbox{padding:15px}.nextbig{font-size:24px!important}.logrow{width:100%}.logrow .field{flex:1;min-width:0}.logrow button{font-size:12px;padding:11px}.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.app-notice{top:80px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important}}
+@media print{.intro,.rest-timer,.workspace-nav,.app-notice{display:none!important}.hero-lifts{grid-template-columns:1fr 1fr}header.top{position:static}.wrap{max-width:none;padding:0}.tabs{display:none}}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -427,17 +462,29 @@
       <div class="brand">
         <div class="logo">进</div>
         <div>
-          <h1>阶梯递进力量计划生成器</h1>
-          <div class="sub">基于 10RM 开把重量，以「递增金字塔 + 双重递进」编排周期计划，并按每次训练的实际结果自动进退阶。</div>
+          <h1>阶梯递进 <span class="brand-en">LADDER PROGRESSION</span></h1>
+          <div class="sub">你的个人力量训练工作台</div>
         </div>
       </div>
       <button id="btnTheme" class="theme-btn no-print">浅色模式</button>
     </div>
   </header>
 
-  <section class="hero" id="hero"></section>
+  <section class="intro no-print">
+    <div><div class="eyebrow">TRAIN SMART. GROW STRONG.</div><h2>每一次训练，<br>都向前一步<span>。</span></h2><p>从你的 10RM 出发，让计划跟上你的进步。<br>专注完成今天的训练，下一步交给阶梯递进。</p><div class="intro-badges"><span>本机保存</span><span>离线可用</span><span>双动作独立递进</span></div></div>
+    <div class="ladder-art" aria-hidden="true"><span class="art-label">ONE STEP AT A TIME</span><div class="art-bars"><i></i><i></i><i></i><i></i></div><span class="art-bottom">01 — 04 <b>持续积累，逐级突破 ↗</b></span></div>
+  </section>
+  <section class="hero" id="hero" aria-label="训练概览"></section>
 
-  <nav class="tabs no-print" id="tabs">
+  <section class="rest-timer no-print" aria-label="组间休息计时器">
+    <div><b>组间休息</b><span id="timerHint">完成一组，给身体 3 分钟恢复</span></div>
+    <output id="timerClock" aria-label="剩余休息时间">03:00</output>
+    <button id="timerStart">开始休息</button><button id="timerReset" aria-label="重置休息计时器">重置</button>
+  </section>
+
+  <div id="appNotice" class="app-notice no-print" role="status" aria-live="polite" hidden></div>
+
+  <nav class="tabs no-print" id="tabs" aria-label="训练工作区">
     <button class="tab active" data-tab="bench">卧推</button>
     <button class="tab" data-tab="squat">深蹲</button>
     <button class="tab" data-tab="history">历史轮次</button>
@@ -530,7 +577,7 @@
   </div>
   </main>
 
-  <footer class="site-foot">阶梯递进力量计划生成器 v1.1.0 · Ladder Progression · 构建于 2026-10-01 · 训练记录与历史轮次仅保存在本机浏览器，不会上传到任何服务器</footer>
+  <footer class="site-foot">阶梯递进力量计划生成器 v1.2.0 · Ladder Progression · 更新于 2026-10-24 · 训练记录与历史轮次仅保存在本机浏览器，不会上传到任何服务器</footer>
 
 </div>
 
@@ -599,7 +646,7 @@ function decideMode(key, tenRM, repsAfterStep, forceMode, stepOverride, unit){
   else if (mode === 'advance') step = s.advanceStep;
   else step = s.baseStep;
 
-  const open = (mode === 'regress') ? (tenRM - s.regressDrop) : tenRM;
+  const open = Math.max(5, (mode === 'regress') ? (tenRM - s.regressDrop) : tenRM);
 
   return { key, name:s.name, unit:u, tenRM, repsAfterStep, gap, mode, step, open, spec:s };
 }
@@ -676,7 +723,7 @@ function applyLog(cycles, log, regressDrop, failThreshold, perWeek){
     const base = baseline[Math.min(pos, baseline.length - 1)];
     const completed = !!rec.completed;
     const item = {
-      cycle: base.cycle, weight: base.weight - drop, reps: base.reps, sets: base.sets,
+      cycle: base.cycle, weight: Math.max(5, base.weight - drop), reps: base.reps, sets: base.sets,
       state: completed ? 'done' : 'failed',
       actual: (rec.actual === undefined || rec.actual === null) ? null : rec.actual,
       at: rec.at || '', dropped: drop, regressed: false
@@ -699,7 +746,7 @@ function applyLog(cycles, log, regressDrop, failThreshold, perWeek){
   for (let p = pos; p < baseline.length; p++){
     const b = baseline[p];
     timeline.push({
-      cycle: b.cycle, weight: b.weight - drop, reps: b.reps, sets: b.sets,
+      cycle: b.cycle, weight: Math.max(5, b.weight - drop), reps: b.reps, sets: b.sets,
       state: 'planned', actual: null, at: '', dropped: drop, regressed: false
     });
   }
@@ -727,6 +774,49 @@ function applyLog(cycles, log, regressDrop, failThreshold, perWeek){
   };
 }
 
+function validActual(value){
+  return String(value).trim() !== '' && Number.isInteger(Number(value)) && Number(value) >= 0 && Number(value) <= 99;
+}
+
+/* 在进入页面与本地存储前检查备份结构，拒绝损坏记录及可执行 HTML。 */
+function validateBackup(data){
+  const object = v => v && typeof v === 'object' && !Array.isArray(v);
+  const checkLogs = logs => {
+    if (!Array.isArray(logs)) throw new Error('训练记录格式不正确');
+    logs.forEach(r => {
+      if (!object(r) || typeof r.at !== 'string' || r.at.length > 40 || /[<>&"']/.test(r.at) ||
+          ![r.weight, r.reps, r.sets, r.cycle].every(Number.isFinite) ||
+          r.weight < 0 || r.reps < 1 || r.sets < 1 || !Number.isInteger(r.cycle) || r.cycle < 1 || r.cycle > 4 ||
+          typeof r.completed !== 'boolean' || (r.actual != null && !validActual(r.actual))){
+        throw new Error('备份含有无效训练记录');
+      }
+    });
+  };
+  if (!object(data) || (!data.logs && !data.archives)) throw new Error('文件内容不是本工具的备份');
+  if (data.settings != null && !object(data.settings)) throw new Error('备份设置格式不正确');
+  if (data.logs != null){
+    if (!object(data.logs)) throw new Error('训练记录格式不正确');
+    ALL_LIFTS.forEach(k => { if (data.logs[k] != null) checkLogs(data.logs[k]); });
+  }
+  if (data.archives != null){
+    if (!Array.isArray(data.archives)) throw new Error('历史轮次格式不正确');
+    data.archives.forEach(a => {
+      if (!object(a) || typeof a.id !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(a.id) ||
+          typeof a.savedAt !== 'string' || !Array.isArray(a.lifts) ||
+          (a.unit !== 'kg' && a.unit !== 'lb')) throw new Error('历史轮次格式不正确');
+      a.lifts.forEach(L => {
+        if (!object(L) || !ALL_LIFTS.includes(L.key) ||
+            !['tenRM','open','step','sessions','done','failed','regress','weeks','peak'].every(f => Number.isFinite(L[f])) ||
+            typeof L.name !== 'string' || typeof L.mode !== 'string' || /[<>&"']/.test(L.name + L.mode)){
+          throw new Error('历史轮次内容不正确');
+        }
+        checkLogs(L.log || []);
+      });
+    });
+  }
+  return data;
+}
+
 /* CORE-END */
 
 /* ==========================================================================
@@ -735,13 +825,62 @@ function applyLog(cycles, log, regressDrop, failThreshold, perWeek){
 const $ = (id) => document.getElementById(id);
 const LIFT_NAME = { bench:'卧推', squat:'深蹲' };
 
+let noticeTimeout;
+function showNotice(message, error){
+  clearTimeout(noticeTimeout);
+  const el = $('appNotice');
+  el.textContent = message;
+  el.classList.toggle('error', !!error);
+  el.hidden = false;
+  if (!error) noticeTimeout = setTimeout(() => { el.hidden = true; }, 5000);
+}
+function persistLocal(key, value){
+  try { localStorage.setItem(key, JSON.stringify(value)); return true; }
+  catch (e){ showNotice('本次更改未能保存到浏览器。请立即前往「导出」备份数据，并检查存储空间或浏览器隐私设置。', true); return false; }
+}
+
+/* 使用截止时间计算，后台标签页计时也不会因 interval 降频而变慢。 */
+let restRemaining = 180, restDeadline = 0, restInterval = null;
+function paintTimer(){
+  if (restDeadline) restRemaining = Math.max(0, Math.ceil((restDeadline - Date.now()) / 1000));
+  $('timerClock').textContent = String(Math.floor(restRemaining / 60)).padStart(2, '0') + ':' + String(restRemaining % 60).padStart(2, '0');
+  if (restDeadline && restRemaining === 0){
+    clearInterval(restInterval); restInterval = null; restDeadline = 0;
+    $('timerStart').textContent = '再休息一组';
+    $('timerHint').textContent = '休息结束，准备好后开始下一组';
+    showNotice('3 分钟组间休息结束，准备好后开始下一组。');
+  }
+}
+$('timerStart').addEventListener('click', () => {
+  if (restDeadline){
+    paintTimer(); restDeadline = 0; clearInterval(restInterval); restInterval = null;
+    $('timerStart').textContent = '继续休息';
+    $('timerHint').textContent = '计时已暂停';
+  } else {
+    if (!restRemaining) restRemaining = 180;
+    restDeadline = Date.now() + restRemaining * 1000;
+    restInterval = setInterval(paintTimer, 250);
+    $('timerStart').textContent = '暂停';
+    $('timerHint').textContent = '放松呼吸，为下一组做好准备';
+    paintTimer();
+  }
+});
+$('timerReset').addEventListener('click', () => {
+  restDeadline = 0; restRemaining = 180; clearInterval(restInterval); restInterval = null;
+  $('timerStart').textContent = '开始休息';
+  $('timerHint').textContent = '完成一组，给身体 3 分钟恢复';
+  paintTimer();
+});
+document.addEventListener('visibilitychange', paintTimer);
+document.addEventListener('input', e => { if (e.target.matches('input[type=number]')) e.target.setCustomValidity(''); });
+
 /* 每个动作一套完整、独立的工作区标记（避免两份静态标记不同步） */
 function liftOptionsHtml(k){
   const name = LIFT_NAME[k], step = LIFT_SPECS[k].measureStep;
   return '' +
   '<div class="fieldgroup"><span class="fgtitle">基础参数</span><div class="grid g4">' +
     '<div class="field"><label>' + name + ' 10RM 重量</label>' +
-      '<input type="number" id="' + k + 'RM" value="' + (k === 'bench' ? 100 : 130) + '" min="5" step="2.5"></div>' +
+      '<input type="number" id="' + k + 'RM" value="' + (k === 'bench' ? 100 : 130) + '" min="5" max="1000" step="2.5"></div>' +
     '<div class="field"><label>' + name + '：递增 ' + step + 'kg 后完成次数</label>' +
       '<input type="number" id="' + k + 'Reps" value="8" min="1" max="10" step="1">' +
       '<div class="live" id="live-' + k + '"></div></div>' +
@@ -807,7 +946,29 @@ function workspaceHtml(k){
 }
 
 (function buildWorkspaces(){
-  ALL_LIFTS.forEach(k => { $('ws-' + k).innerHTML = workspaceHtml(k); });
+  ALL_LIFTS.forEach(k => {
+    const ws = $('ws-' + k);
+    ws.innerHTML = workspaceHtml(k);
+    ws.prepend($('mod-log-' + k));
+    const nav = document.createElement('nav');
+    nav.className = 'workspace-nav no-print';
+    nav.setAttribute('aria-label', LIFT_NAME[k] + '页面导航');
+    nav.innerHTML = [['log','训练打卡'],['setup','计划设置'],['cycles','循环编排'],['schedule','训练日程'],['round','本轮进度']]
+      .map(([id, label]) => '<a href="#mod-' + id + '-' + k + '">' + label + '</a>').join('');
+    ws.prepend(nav);
+    const guide = $('mod-setup-' + k).querySelector('.guide');
+    const heading = guide.previousElementSibling;
+    const details = document.createElement('details');
+    details.className = 'setup-guide';
+    heading.replaceWith(details);
+    const summary = document.createElement('summary');
+    summary.textContent = '第一次使用？查看 10RM 测试方法';
+    details.append(summary, guide);
+    ws.querySelectorAll('.field').forEach(field => {
+      const label = field.querySelector('label'), input = field.querySelector('input,select');
+      if (label && input) label.htmlFor = input.id;
+    });
+  });
 })();
 
 /* ---------- 训练记录状态（本地持久化） ---------- */
@@ -831,9 +992,10 @@ function loadLog(){
   } catch (e) {}
 }
 function saveLog(){
-  try { localStorage.setItem(LOG_KEY, JSON.stringify(workoutLog)); } catch (e) {}
+  const saved = persistLocal(LOG_KEY, workoutLog);
   /* 记录一变，本轮就不再是「已保存」状态 */
   ALL_LIFTS.forEach(k => { state.roundSaved[k] = false; });
+  return saved;
 }
 function sessionStamp(){
   const d = new Date(), p = n => (n < 10 ? '0' + n : String(n));
@@ -853,8 +1015,8 @@ function readCfg(){
     const unit = $(k + 'Unit').value;
     const rawStep = $(k + 'Step').value;
     out.cfg[k] = {
-      tenRM: Number($(k + 'RM').value) || 0,
-      repsAfterStep: Number($(k + 'Reps').value) || 0,
+      tenRM: Math.max(5, Math.min(1000, Number($(k + 'RM').value) || 5)),
+      repsAfterStep: Math.max(1, Math.min(10, Math.round(Number($(k + 'Reps').value) || 1))),
       forceMode: $(k + 'ForceMode').value,
       stepOverride: (unit === 'lb' && rawStep !== 'auto') ? String(Number(rawStep) * 2) : rawStep,
       perWeek: Number($(k + 'PerWeek').value),
@@ -997,7 +1159,7 @@ function renderLogFor(k, unit, prog, A){
           '<div class="nextbig">' + A.next.weight + '<small>' + unit + '</small> × ' + A.next.sets + ' 组 × ' + A.next.reps + ' 次</div>' +
         '</div>' +
         '<div class="logrow no-export">' +
-          '<div class="field"><label>实际完成次数（最难一组）</label>' +
+          '<div class="field"><label for="actual-' + k + '">实际完成次数（最难一组）</label>' +
             '<input type="number" id="actual-' + k + '" min="0" max="99" step="1" value="' + A.next.reps + '">' +
           '</div>' +
           '<button class="primary" data-log="' + k + '">记录本次训练</button>' +
@@ -1067,9 +1229,11 @@ function recordSession(k){
   const cur = adjustedFor(k);
   if (!cur.A.next || cur.A.perWeek === 0) return;
   const input = $('actual-' + k);
-  let actual = input ? Number(input.value) : cur.A.next.reps;
-  if (!isFinite(actual) || actual < 0) actual = cur.A.next.reps;
-  actual = Math.round(actual);
+  if (!input || !validActual(input.value)){
+    if (input){ input.setCustomValidity('请输入 0–99 之间的整数；未完成可填 0。'); input.reportValidity(); }
+    return;
+  }
+  const actual = Number(input.value);
   workoutLog[k] = (workoutLog[k] || []).concat([{
     at: sessionStamp(),
     cycle: cur.A.next.cycle,
@@ -1079,8 +1243,9 @@ function recordSession(k){
     actual: actual,
     completed: actual >= cur.A.next.reps
   }]);
-  saveLog();
+  const saved = saveLog();
   renderAll();
+  if (saved) showNotice(LIFT_NAME[k] + '训练已记录。' + (actual >= cur.A.next.reps ? '已进入下一档。' : '下次安排已更新。'));
 }
 
 function undoLast(k){
@@ -1091,6 +1256,7 @@ function undoLast(k){
 }
 
 function clearLiftLog(k){
+  if (!window.confirm('清空' + LIFT_NAME[k] + '本轮的全部训练记录？已归档的历史轮次会保留。')) return;
   workoutLog[k] = [];
   saveLog();
   renderAll();
@@ -1104,7 +1270,11 @@ const TAB_KEY = 'tp-tab';
 function switchTab(name){
   const tabs = [].slice.call(document.querySelectorAll('.tab'));
   if (!tabs.some(b => b.getAttribute('data-tab') === name)) name = 'bench';
-  tabs.forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === name));
+  tabs.forEach(b => {
+    const active = b.getAttribute('data-tab') === name;
+    b.classList.toggle('active', active);
+    b.setAttribute('aria-pressed', String(active));
+  });
   [].slice.call(document.querySelectorAll('.tabpane'))
     .forEach(p => p.classList.toggle('active', p.getAttribute('data-pane') === name));
   try { localStorage.setItem(TAB_KEY, name); } catch (e) {}
@@ -1130,7 +1300,7 @@ function loadArchives(){
   } catch (e) { archives = []; }
 }
 function saveArchives(){
-  try { localStorage.setItem(ARCHIVE_KEY, JSON.stringify(archives)); } catch (e) {}
+  persistLocal(ARCHIVE_KEY, archives);
 }
 
 function liftSummary(k, cfg){
@@ -1153,7 +1323,7 @@ function renderHero(){
       '<span class="hl-meta">开把 <b>' + s.prog.decided.open + s.unit + '</b> · 跨度 ' +
         s.prog.decided.step + s.unit + ' · ' +
         (s.A.perWeek > 0 ? '每周 ' + s.A.perWeek + ' 次' : '<b>已暂停</b>') +
-        (s.A.next ? ' · 下一次 ' + s.A.next.weight + s.unit + ' × ' + s.A.next.sets + ' 组 × ' + s.A.next.reps + ' 次'
+        (s.A.perWeek === 0 ? ' · 恢复训练后继续' : s.A.next ? ' · 下一次 ' + s.A.next.weight + s.unit + ' × ' + s.A.next.sets + ' 组 × ' + s.A.next.reps + ' 次'
                   : ' · 本轮已完成') + '</span>' +
       '<span class="hl-bar"><i style="width:' + pct + '%"></i></span>' +
     '</button>';
@@ -1162,8 +1332,8 @@ function renderHero(){
   $('hero').innerHTML =
     '<div class="hero-top">' +
       '<div>' +
-        '<h2>两个独立训练计划</h2>' +
-        '<div class="herometa">卧推与深蹲各自设定、各自排期、各自记录，互不影响；点下方任一行可直接跳转。</div>' +
+        '<h2>你的训练概览 <span class="section-en">YOUR PROGRESS</span></h2>' +
+        '<div class="herometa">各自进步，同样坚持。选择动作，开始今天的训练。</div>' +
       '</div>' +
       '<div class="herometa">' + (archives.length ? '已保存 ' + archives.length + ' 个历史轮次' : '尚无历史轮次') + '</div>' +
     '</div>' +
@@ -1484,7 +1654,7 @@ let pendingBackup = null;
 function saveSettings(){
   const s = {};
   SETTING_IDS.forEach(id => { const el = $(id); if (el) s[id] = el.value; });
-  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch (e) {}
+  persistLocal(SETTINGS_KEY, s);
 }
 
 function loadSettings(){
@@ -1562,6 +1732,7 @@ function logKey(r){
 }
 
 function applyBackup(data, mode){
+  validateBackup(data);
   const inLogs = data.logs || {};
   const inArc = Array.isArray(data.archives) ? data.archives : [];
 
@@ -1721,7 +1892,7 @@ function applyTheme(t){
 }
 (function initTheme(){
   let saved = 'dark';
-  try { saved = localStorage.getItem(THEME_KEY) || 'dark'; } catch (e) {}
+  try { saved = localStorage.getItem(THEME_KEY) || 'light'; } catch (e) { saved = 'light'; }
   applyTheme(saved);
   $('btnTheme').addEventListener('click', () => {
     const next = currentTheme() === 'light' ? 'dark' : 'light';
@@ -1818,6 +1989,7 @@ function buildExportRoot(mods, vars){
     const sec = document.createElement('section');
     sec.className = 'card';
     sec.innerHTML = m.innerHTML;
+    sec.querySelectorAll('details').forEach(detail => { detail.open = true; });
     /* 导出为固定宽度的桌面文档，去掉仅手机端显示的副本 */
     [].slice.call(sec.querySelectorAll('.only-mobile, .no-export')).forEach(n => n.parentNode.removeChild(n));
     root.appendChild(sec);
@@ -1982,7 +2154,13 @@ function exportCsv(){
 
 /* ---------- 事件绑定 ---------- */
 SETTING_IDS.forEach(id => {
-  const save = () => { saveSettings(); renderAll(); };
+  const save = e => {
+    if (!$(id).checkValidity() || $(id).value === ''){
+      if (e.type === 'change') $(id).reportValidity();
+      return;
+    }
+    saveSettings(); renderAll();
+  };
   $(id).addEventListener('input', save);
   $(id).addEventListener('change', save);
 });
@@ -2070,10 +2248,7 @@ $('importFile').addEventListener('change', e => {
   reader.onload = () => {
     let data;
     try {
-      data = JSON.parse(String(reader.result));
-      if (!data || typeof data !== 'object' || (!data.logs && !data.archives)){
-        throw new Error('文件内容不是本工具的备份');
-      }
+      data = validateBackup(JSON.parse(String(reader.result)));
     } catch (err) {
       pendingBackup = null;
       $('importPreview').innerHTML = '';
