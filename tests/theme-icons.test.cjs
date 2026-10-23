@@ -6,7 +6,7 @@ const vm = require('node:vm');
 const root = path.join(__dirname,'..');
 const html = fs.readFileSync(path.join(root,'index.html'),'utf8');
 const app = fs.readFileSync(path.join(root,'assets/js/app.js'),'utf8');
-const theme = app.slice(app.indexOf("const THEME_KEY ="), app.indexOf('const EXPORT_DARK_VARS'));
+const theme = app.slice(app.indexOf("const THEME_KEY ="), app.indexOf('/* THEME-END */'));
 function page(saved, dark = false){
   const attributes = {}, listeners = {}, storage = new Map(saved ? [['tp-theme', saved]] : []);
   const media = {matches:dark, addEventListener:(name,fn)=>{listeners.system=fn}};
@@ -60,5 +60,5 @@ test('Android and Apple icon declarations point at correctly sized PNGs',()=>{
   }
   assert.ok(manifest.icons.some(i=>i.purpose==='maskable' && i.src.includes('maskable')));
   assert.ok(html.includes('sizes="180x180"'));
-  assert.ok(html.includes('src="./assets/icons/icon.svg?v=1.5.0"'));
+  assert.ok(html.includes('src="./assets/icons/icon.svg?v=1.6.0"'));
 });

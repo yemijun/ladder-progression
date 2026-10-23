@@ -1,0 +1,22 @@
+.export-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+#exportAdvanced{padding:16px 0;border-top:1px solid var(--line);margin-top:18px}
+.export-csv{border:1px solid var(--line);border-radius:10px;padding:13px 15px;margin-top:18px}
+.export-csv>summary{font-size:13px;font-weight:600;cursor:pointer}.export-csv[open]>summary{margin-bottom:14px}
+#exportPreview{width:min(660px,calc(100vw - 24px));max-height:calc(100dvh - 32px);padding:18px;border:1px solid var(--line);border-radius:15px;background:var(--panel);color:var(--text);overflow:auto}
+#exportPreview::backdrop{background:#000a}.preview-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.preview-heading h2{font-size:16px;margin:0}.preview-heading button{font-size:12px;padding:7px 12px}
+#previewInfo,#previewMessage{font-size:12px;color:var(--muted);margin:12px 0;line-height:1.7}
+.preview-image{background:var(--bg);border:1px solid var(--line);border-radius:10px;overflow:hidden}.preview-image img{display:block;width:100%;height:auto;-webkit-touch-callout:default}
+.preview-pagination,.preview-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.preview-pagination button{flex:1}.preview-actions button{flex:1 1 140px;font-size:12px}
+body:has(#exportPreview[open]){overflow:hidden}
+#exportPrintRoot{display:none}
+@media(max-width:640px){.export-form{gap:12px}.export-form .field:first-child,.export-form .field:last-child{grid-column:1/-1}#exportPreview{padding:14px}.preview-actions button{flex:1 1 40%}}
+@media print{
+  body.export-printing{background:#fff!important;color:#111!important;padding:0!important;min-height:0!important}
+  body.export-printing>:not(#exportPrintRoot){display:none!important}
+  #exportPrintRoot{display:block!important;font:12px/1.6 sans-serif;color:#111;background:#fff}
+  .export-print-page{break-after:page;padding:12px;break-inside:avoid}
+  .export-print-page:last-child{break-after:auto}.export-print-page h1{font-size:20px}.export-print-page h2{font-size:17px}
+  .export-print-page p{margin:7px 0}.export-print-page table{width:100%;border-collapse:collapse}
+  .export-print-page th,.export-print-page td{border:1px solid #bbb;padding:7px;color:#111;background:#fff;font-size:11px;overflow-wrap:anywhere}
+  .export-print-page footer{margin-top:14px;font-size:10px;color:#555}
+}

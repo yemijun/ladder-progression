@@ -530,6 +530,7 @@ function syncLiftVisibility(){
       group.querySelectorAll('input').forEach(input => { input.disabled = !enabledLifts[k]; });
     }
   });
+  syncExportControls();
   const active = document.querySelector('.tab.active');
   let name = active ? active.getAttribute('data-tab') : visibleLifts()[0];
   if (!workspacesInitialized){
@@ -716,7 +717,7 @@ function renderHistory(){
           : '<button data-arc-rename="' + a.id + '">重命名</button>') +
         '<button data-arc-png="' + a.id + '">导出图片</button>' +
         '<button data-arc-csv="' + a.id + '">导出 CSV</button>' +
-        '<button data-arc-json="' + a.id + '">导出 JSON</button>' +
+        '<button data-arc-json="' + a.id + '">归档 JSON</button>' +
         '<button data-arc-del="' + a.id + '" class="dangerish">删除</button>';
 
     return '<div class="arc' + (isOpen ? ' open' : '') + (isPick ? ' picked' : '') + '">' +
@@ -821,7 +822,7 @@ function pushArchiveRows(a, rows){
 const ARCHIVE_CSV_HEAD = ['轮次', '动作', '模式', '单位', '时间', '小循环', '重量', '组数', '要求次数', '实际次数', '结果'];
 
 function writeCsv(name, rows){
-  const csv = '\ufeff' + rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+  const csv = serializeExportCsv(rows);
   downloadBlob(new Blob([csv], { type:'text/csv;charset=utf-8' }), name);
 }
 
@@ -849,52 +850,22 @@ function archiveJson(id){
   const a = archives.filter(x => x.id === id)[0];
   if (!a) return;
   downloadBlob(new Blob([JSON.stringify({
-    app:'阶梯递进力量计划生成器', version: BACKUP_VERSION, exportedAt: sessionStamp(),
+    app:'阶梯递进力量计划生成器', kind:'archive', version: BACKUP_VERSION, exportedAt: sessionStamp(),
     logs: {}, archives: [a]
   }, null, 2)], { type:'application/json;charset=utf-8' }),
     '训练记录_' + safeName(archiveTitle(a)) + '.json');
-  setMsg('已导出该轮 JSON，可在「导出」页导入还原。', 'ok');
+  setMsg('已导出该轮归档 JSON；导入时仅合并历史，不覆盖当前训练。', 'ok');
 }
 
 function batchJson(){
   const sel = pickedList();
   if (!sel.length) return;
   downloadBlob(new Blob([JSON.stringify({
-    app:'阶梯递进力量计划生成器', version: BACKUP_VERSION, exportedAt: sessionStamp(),
+    app:'阶梯递进力量计划生成器', kind:'archive', version: BACKUP_VERSION, exportedAt: sessionStamp(),
     logs: {}, archives: sel
   }, null, 2)], { type:'application/json;charset=utf-8' }),
     '训练记录_' + sel.length + '轮.json');
   setMsg('已导出 ' + sel.length + ' 轮的 JSON。', 'ok');
-}
-
-function exportArchivePng(id){
-  const a = archives.filter(x => x.id === id)[0];
-  if (!a) return;
-  setMsg('正在生成图片，请稍候…');
-  renderCanvasFrom(vars => {
-    const root = document.createElement('div');
-    root.className = 'export-root';
-    root.style.width = '1160px';
-    Object.keys(vars).forEach(k => root.style.setProperty(k, vars[k]));
-    const head = document.createElement('div');
-    head.className = 'export-head';
-    head.innerHTML = '<b>' + escapeHtml(archiveTitle(a)) + '</b>' +
-      '<span>' + escapeHtml(a.savedAt) + ' · 共 ' + logCount(a) + ' 次训练</span>';
-    root.appendChild(head);
-    const sec = document.createElement('section');
-    sec.className = 'card';
-    sec.innerHTML = archiveBodyHtml(a);
-    /* 导出为固定宽度文档，去掉仅手机端显示的卡片副本 */
-    [].slice.call(sec.querySelectorAll('.only-mobile, .no-export')).forEach(n => n.parentNode.removeChild(n));
-    root.appendChild(sec);
-    return root;
-  }, Number($('pngScale').value) || 2, $('pngBg').value).then(canvas => {
-    canvas.toBlob(blob => {
-      if (!blob){ setMsg('图片生成失败。', 'err'); return; }
-      downloadBlob(blob, '训练记录_' + safeName(archiveTitle(a)) + '.png');
-      setMsg('已导出图片，尺寸 ' + canvas.width + ' × ' + canvas.height + ' 像素。', 'ok');
-    }, 'image/png');
-  }).catch(e => setMsg('图片导出失败（' + e.message + '）。', 'err'));
 }
 
 /* ==========================================================================
@@ -966,6 +937,7 @@ function collectBackup(){
   settings.enabledLifts = Object.assign({}, enabledLifts);
   return {
     app: '阶梯递进力量计划生成器',
+    kind: 'full-backup',
     version: BACKUP_VERSION,
     exportedAt: sessionStamp(),
     settings: settings,
@@ -1016,6 +988,7 @@ function logKey(r){
 
 function applyBackup(data, mode){
   validateBackup(data);
+  if (archiveOnlyBackup(data)) mode = 'merge';
   const inLogs = data.logs || {};
   const inArc = Array.isArray(data.archives) ? data.archives : [];
 
@@ -1045,6 +1018,7 @@ function applyBackup(data, mode){
   saveArchives();
   ALL_LIFTS.forEach(k => { state.roundSaved[k] = false; });
   renderAll();
+  return mode;
 }
 
 function buildRulesFor(k, cfg){
@@ -1189,264 +1163,13 @@ function applyTheme(t){
   if (systemTheme.addEventListener) systemTheme.addEventListener('change', followSystem);
   else systemTheme.addListener(followSystem);
 })();
+/* THEME-END */
 
 /* ==========================================================================
    导出
    ========================================================================== */
-const EXPORT_DARK_VARS = {
-  '--bg':'#0f1115','--panel':'#171a21','--panel2':'#1e222b','--line':'#2a2f3a',
-  '--text':'#e8eaf0','--muted':'#98a0b3','--accent':'#4f8cff','--accent2':'#33d69f',
-  '--warn':'#ffb454','--danger':'#ff6b6b','--violet':'#8a7cff',
-  '--cyc1':'#4f8cff','--cyc2':'#33d69f','--cyc3':'#8a7cff','--cyc4':'#ffb454',
-  '--chip1':'#9dc0ff','--chip2':'#a8e6c9','--chip3':'#cfc7ff','--chip4':'#ffd0a3',
-  '--b-base-fg':'#9dc0ff','--b-base-bd':'rgba(79,140,255,.5)','--b-base-bg':'rgba(79,140,255,.12)',
-  '--b-reg-fg':'#ffd0a3','--b-reg-bd':'rgba(255,180,84,.5)','--b-reg-bg':'rgba(255,180,84,.12)',
-  '--b-adv-fg':'#a8e6c9','--b-adv-bd':'rgba(51,214,159,.5)','--b-adv-bg':'rgba(51,214,159,.12)',
-  '--shadow':'0 1px 2px rgba(0,0,0,.35), 0 10px 28px rgba(0,0,0,.22)'
-};
-const EXPORT_LIGHT_VARS = {
-  '--bg':'#ffffff','--panel':'#ffffff','--panel2':'#f5f6f8','--line':'#d5d8de',
-  '--text':'#111827','--muted':'#5a6473','--accent':'#1b62d6','--accent2':'#0a7a52',
-  '--warn':'#a05a00','--danger':'#c0392b','--violet':'#5b4bc4',
-  '--cyc1':'#1b62d6','--cyc2':'#0a7a52','--cyc3':'#5b4bc4','--cyc4':'#a05a00',
-  '--chip1':'#1b62d6','--chip2':'#0a7a52','--chip3':'#5b4bc4','--chip4':'#a05a00',
-  '--b-base-fg':'#1b62d6','--b-base-bd':'rgba(27,98,214,.45)','--b-base-bg':'rgba(27,98,214,.10)',
-  '--b-reg-fg':'#a05a00','--b-reg-bd':'rgba(160,90,0,.45)','--b-reg-bg':'rgba(160,90,0,.10)',
-  '--b-adv-fg':'#0a7a52','--b-adv-bd':'rgba(10,122,82,.45)','--b-adv-bg':'rgba(10,122,82,.10)',
-  '--shadow':'0 1px 2px rgba(16,24,40,.06), 0 10px 28px rgba(16,24,40,.07)'
-};
-const EXPORT_VAR_NAMES = ['--bg','--panel','--panel2','--line','--text','--muted','--accent',
-  '--accent2','--warn','--danger','--violet','--cyc1','--cyc2','--cyc3','--cyc4','--radius',
-  '--chip1','--chip2','--chip3','--chip4',
-  '--b-base-fg','--b-base-bd','--b-base-bg','--b-reg-fg','--b-reg-bd','--b-reg-bg',
-  '--b-adv-fg','--b-adv-bd','--b-adv-bg','--shadow'];
-
 function escapeHtml(s){
   return String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
-}
-function setMsg(text, kind){
-  const el = $('exportMsg');
-  el.className = 'expmsg' + (kind ? ' ' + kind : '');
-  el.textContent = text;
-}
-function selectedModules(){
-  return [].slice.call(document.querySelectorAll('#exportModules input[type=checkbox]'))
-    .filter(c => c.checked && !c.disabled)
-    .map(c => document.getElementById(c.getAttribute('data-mod')))
-    .filter(Boolean);
-}
-function exportFileName(){
-  return '阶梯递进力量计划_' + ALL_LIFTS.map(k => LIFT_SPECS[k].name).join('+');
-}
-function readLiveVars(){
-  const cs = getComputedStyle(document.documentElement), out = {};
-  EXPORT_VAR_NAMES.forEach(n => { const v = cs.getPropertyValue(n).trim(); if (v) out[n] = v; });
-  return out;
-}
-/* auto 跟随页面主题；dark / light 固定，不受页面主题影响 */
-function exportVars(mode){
-  if (mode === 'light') return EXPORT_LIGHT_VARS;
-  if (mode === 'dark') return EXPORT_DARK_VARS;
-  return readLiveVars();
-}
-
-/* 将输入框当前值写回 HTML 属性，否则序列化结果仍为初始值 */
-function syncFormValues(){
-  document.querySelectorAll('#mod-setup input, #mod-setup select, #mod-gap input, #mod-gap select').forEach(el => {
-    if (el.tagName === 'SELECT'){
-      [].forEach.call(el.options, o => o.removeAttribute('selected'));
-      if (el.options[el.selectedIndex]) el.options[el.selectedIndex].setAttribute('selected', '');
-    } else if (el.type === 'number' || el.type === 'text'){
-      el.setAttribute('value', el.value);
-    }
-  });
-}
-
-function buildExportRoot(mods, vars){
-  const root = document.createElement('div');
-  root.className = 'export-root';
-  root.style.width = '1160px';
-  Object.keys(vars).forEach(k => root.style.setProperty(k, vars[k]));
-
-  const head = document.createElement('div');
-  head.className = 'export-head';
-  head.innerHTML = '<b>' + escapeHtml($('pngTitle').value || '训练计划') + '</b>' +
-                   '<span>' + new Date().toLocaleDateString('zh-CN') + '</span>';
-  root.appendChild(head);
-
-  mods.forEach(m => {
-    const sec = document.createElement('section');
-    sec.className = 'card';
-    sec.innerHTML = m.innerHTML;
-    sec.querySelectorAll('details').forEach(detail => { detail.open = true; });
-    /* 导出为固定宽度的桌面文档，去掉仅手机端显示的副本 */
-    [].slice.call(sec.querySelectorAll('.only-mobile, .no-export')).forEach(n => n.parentNode.removeChild(n));
-    root.appendChild(sec);
-  });
-  return root;
-}
-
-/* 以 SVG foreignObject 将 DOM 光栅化到 canvas：不依赖任何外部库，离线可用。
-   buildRoot(vars) 返回待光栅化的根节点，单轮归档图片也走这条路径。 */
-function renderCanvasFrom(buildRoot, scale, bgMode){
-  return new Promise((resolve, reject) => {
-    syncFormValues();
-    const vars = exportVars(bgMode);
-
-    /* 先捕获页面 CSS（必须在插入导出节点之前，否则会捕获到导出节点自身的样式） */
-    const css = Array.from(document.styleSheets).map(sheet =>
-      Array.from(sheet.cssRules).map(rule => rule.cssText).join('\n')
-    ).join('\n');
-
-    const root = buildRoot(vars);
-    /* 由外层 holder 负责移出可视区域；root 自身样式必须保持干净，
-       否则 position:fixed;left:-20000px 会被一并序列化进 SVG，导出结果为空图 */
-    const holder = document.createElement('div');
-    holder.style.cssText = 'position:fixed;left:-20000px;top:0;';
-    holder.appendChild(root);
-    document.body.appendChild(holder);
-
-    /* 样式必须随 DOM 进入 SVG，否则导出结果为无样式的裸 HTML */
-    const styleEl = document.createElement('style');
-    styleEl.textContent = css;
-    root.insertBefore(styleEl, root.firstChild);
-
-    const rect = root.getBoundingClientRect();
-    const w = Math.ceil(rect.width), h = Math.ceil(rect.height);
-
-    /* 必须使用 XMLSerializer：outerHTML 中 <input> <br> 等非自闭合标签会使 SVG 解析失败 */
-    const inner = new XMLSerializer().serializeToString(root);
-    document.body.removeChild(holder);
-
-    if (!w || !h) { reject(new Error('内容尺寸为 0')); return; }
-
-    const svg =
-      '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '">' +
-        '<foreignObject x="0" y="0" width="' + w + '" height="' + h + '">' +
-          inner +
-        '</foreignObject>' +
-      '</svg>';
-
-    const img = new Image();
-    img.onload = () => {
-      try {
-        const canvas = document.createElement('canvas');
-        canvas.width = Math.round(w * scale);
-        canvas.height = Math.round(h * scale);
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = vars['--bg'] || '#0f1115';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.setTransform(scale, 0, 0, scale, 0, 0);
-        ctx.drawImage(img, 0, 0, w, h);
-        resolve(canvas);
-      } catch (e) { reject(e); }
-    };
-    img.onerror = () => reject(new Error('浏览器拒绝了图片渲染'));
-    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-  });
-}
-
-/* 计划模块的图片导出 */
-function renderExportCanvas(mods, scale, bgMode){
-  return renderCanvasFrom(vars => buildExportRoot(mods, vars), scale, bgMode);
-}
-
-function downloadBlob(blob, filename){
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-}
-
-async function exportPng(){
-  const mods = selectedModules();
-  if (!mods.length){ setMsg('请至少勾选一个模块后再执行导出。', 'err'); return; }
-  setMsg('正在生成图片，请稍候…');
-  try {
-    const scale = Number($('pngScale').value) || 2;
-    const canvas = await renderExportCanvas(mods, scale, $('pngBg').value);
-    await new Promise((resolve) => {
-      canvas.toBlob(blob => {
-        if (!blob){ setMsg('图片生成失败，可改用「打印 / 导出 PDF」。', 'err'); resolve(); return; }
-        downloadBlob(blob, exportFileName() + '.png');
-        setMsg('已导出 ' + mods.length + ' 个模块，图片尺寸 ' + canvas.width + ' × ' + canvas.height + ' 像素。', 'ok');
-        resolve();
-      }, 'image/png');
-    });
-  } catch (e) {
-    setMsg('图片导出失败（' + e.message + '）。可改用「打印 / 导出 PDF」，输出内容一致。', 'err');
-  }
-}
-
-let printDetails = [];
-function exportPrint(){
-  const mods = selectedModules();
-  if (!mods.length){ setMsg('请先选择需要打印的模块。', 'err'); return; }
-  printDetails = Array.from(document.querySelectorAll('.workspace-view details')).map(detail => [detail, detail.open]);
-  printDetails.forEach(([detail]) => { detail.open = true; });
-  document.querySelectorAll('.mod').forEach(m => m.classList.toggle('hide-print', mods.indexOf(m) < 0));
-  window.print();
-}
-window.addEventListener('afterprint', () => {
-  document.querySelectorAll('.mod').forEach(m => m.classList.remove('hide-print'));
-  printDetails.forEach(([detail, open]) => { detail.open = open; });
-  printDetails = [];
-});
-
-function exportCsv(){
-  const mods = selectedModules();
-  const { cfg } = readCfg();
-  const picked = id => mods.some(m => m.id === id);
-  const any = ALL_LIFTS.some(k => picked('mod-cycles-' + k) || picked('mod-schedule-' + k) || picked('mod-log-' + k));
-  if (!any){
-    setMsg('CSV 数据取自各动作的「小循环编排」「周训练日程」「训练记录」，请至少勾选一项。', 'err');
-    return;
-  }
-  const stText = { done:'已达标', failed:'未达标', next:'下一次', planned:'计划中' };
-  const rows = [];
-
-  ALL_LIFTS.forEach(k => {
-    const unit = cfg[k].unit;
-    const prog = buildLiftPlan(k, cfg[k], unit);
-    const A = applyLog(prog.cycles, workoutLog[k] || [], LIFT_SPECS[k].regressDrop, cfg[k].failThreshold, prog.perWeek);
-
-    if (picked('mod-schedule-' + k) && A.perWeek > 0){
-      if (rows.length) rows.push([]);
-      rows.push([prog.decided.name + ' · 周训练日程（每周 ' + A.perWeek + ' 次）']);
-      rows.push(['周次','第几次训练','重量(' + unit + ')','组数','次数','小循环','状态']);
-      for (let i = 0; i < A.totalWeeks; i++){
-        const wk = A.weeks[i];
-        if (!wk) continue;
-        wk.slots.forEach((sl, slot) => {
-          if (!sl) return;
-          rows.push(['第' + (i + 1) + '周', i * A.perWeek + slot + 1, sl.weight, sl.sets, sl.reps,
-                     '小循环' + sl.cycle, stText[sl.state] || '']);
-        });
-      }
-    }
-    if (picked('mod-cycles-' + k)){
-      if (rows.length) rows.push([]);
-      rows.push([prog.decided.name + ' · 小循环组次编排']);
-      rows.push(['小循环','重量(' + unit + ')','组数','次数','模式']);
-      prog.cycles.forEach(cy => cy.tiers.forEach(t => {
-        rows.push(['小循环' + cy.index, t.weight, t.sets, t.reps, MODE_TEXT[prog.decided.mode].label]);
-      }));
-    }
-    if (picked('mod-log-' + k)){
-      if (rows.length) rows.push([]);
-      rows.push([prog.decided.name + ' · 训练记录']);
-      rows.push(['时间','小循环','重量(' + unit + ')','组数','要求次数','实际次数','结果']);
-      (workoutLog[k] || []).forEach(r => rows.push([r.at, '小循环' + r.cycle, r.weight, r.sets, r.reps,
-        (r.actual === null || r.actual === undefined) ? '' : r.actual, r.completed ? '达标' : '未达标']));
-    }
-  });
-
-  const csv = '\ufeff' + rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\r\n');
-  downloadBlob(new Blob([csv], { type:'text/csv;charset=utf-8' }), exportFileName() + '.csv');
-  setMsg('已导出 CSV，共 ' + rows.length + ' 行。', 'ok');
 }
 
 /* ---------- 事件绑定 ---------- */
@@ -1465,7 +1188,8 @@ $('btnPng').addEventListener('click', exportPng);
 $('btnPrint').addEventListener('click', exportPrint);
 $('btnCsv').addEventListener('click', exportCsv);
 $('btnToggle').addEventListener('click', () => {
-  const boxes = [].slice.call(document.querySelectorAll('#exportModules input[type=checkbox]:not(:disabled)'));
+  const boxes = Array.from(document.querySelectorAll('#exportModules input[type=checkbox]:not(:disabled)'))
+    .filter(input => !input.closest('[data-group]').hidden);
   const allOn = boxes.every(b => b.checked);
   boxes.forEach(b => { b.checked = !allOn; });
   setMsg(allOn ? '已取消全部勾选。' : '已全选 ' + boxes.length + ' 个模块。');
@@ -1554,13 +1278,15 @@ $('importFile').addEventListener('change', e => {
       return;
     }
     pendingBackup = data;
+    const archiveOnly = archiveOnlyBackup(data);
+    if (archiveOnly) $('importMode').value = 'merge';
     const n = ALL_LIFTS.reduce((a, k) =>
       a + ((data.logs && Array.isArray(data.logs[k])) ? data.logs[k].length : 0), 0);
     const m = Array.isArray(data.archives) ? data.archives.length : 0;
     $('importPreview').innerHTML =
       '<div class="nextbox" style="margin-top:14px">' +
         '<div>' +
-          '<div class="nextmeta">备份文件内容</div>' +
+          '<div class="nextmeta">' + (archiveOnly ? '历史归档文件：仅合并归档，不覆盖当前训练' : '完整备份文件：请确认导入方式') + '</div>' +
           '<div>训练记录 <b>' + n + '</b> 条 · 历史轮次 <b>' + m + '</b> 个' +
             (data.exportedAt ? ' · 导出于 ' + escapeHtml(String(data.exportedAt)) : '') + '</div>' +
         '</div>' +
@@ -1570,8 +1296,8 @@ $('importFile').addEventListener('change', e => {
         '</div>' +
       '</div>';
     $('btnImportGo').addEventListener('click', () => {
-      const mode = $('importMode').value;
-      applyBackup(pendingBackup, mode);
+      const mode = applyBackup(pendingBackup, $('importMode').value);
+      $('importMode').value = mode;
       pendingBackup = null;
       $('importPreview').innerHTML = '';
       input.value = '';
@@ -1629,3 +1355,5 @@ loadLog();
 loadSettings();
 renderExportModules();
 renderAll();
+
+initExportUI();

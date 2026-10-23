@@ -9,7 +9,7 @@
     · <a href="#本地开发">本地开发</a>
     · <a href="#数据备份">数据备份</a>
   </p>
-  <p><img alt="版本" src="https://img.shields.io/badge/version-1.5.0-276548"> <img alt="零依赖" src="https://img.shields.io/badge/dependencies-0-276548"> <img alt="本机存储" src="https://img.shields.io/badge/data-local_only-276548"> <img alt="MIT" src="https://img.shields.io/badge/license-MIT-276548"></p>
+  <p><img alt="版本" src="https://img.shields.io/badge/version-1.6.0-276548"> <img alt="零依赖" src="https://img.shields.io/badge/dependencies-0-276548"> <img alt="本机存储" src="https://img.shields.io/badge/data-local_only-276548"> <img alt="MIT" src="https://img.shields.io/badge/license-MIT-276548"></p>
 </div>
 
 ## 界面预览
@@ -82,14 +82,30 @@
 
 参考：[Chrome 贴边显示说明](https://developer.chrome.com/docs/css-ui/edge-to-edge) · [Chromium 导航栏配色问题](https://github.com/GoogleChrome/android-browser-helper/issues/636)
 
+## 导出与分享
+
+在「备份与导出」中选择用途、动作和范围。内容来自点击生成时的数据快照，图片不受页面折叠状态影响。
+
+| 用途 | 导出内容 |
+| :--- | :--- |
+| 训练卡 | 下一次训练的重量、组次、进度与休息提示；暂停或已完成时明确显示状态。 |
+| 周期计划 | 已记录训练及后续安排，按动作、小循环分别出图；未来部分按全部达标推演。 |
+| 本轮训练报告 | 仅包含实际录入的重量、目标次数、实际次数与结果。 |
+| 自定义 | 自选计划参数、基准编排、训练日程和训练记录。 |
+
+- **图片**：原生 Canvas 绘制，支持深浅配色与 1× / 2× / 3× 清晰度；每页最多 12 条，长内容自动分页并限制尺寸。先预览翻页，再保存单张或打包 ZIP；支持文件分享的设备会显示「系统分享」，也可尝试长按图片保存。
+- **打印 / PDF**：使用独立的文字与表格文档，可从浏览器打印窗口存为 PDF；不改变训练页的折叠状态。
+- **CSV**：分别导出训练计划或实际记录，使用所选动作和小循环范围。每行一条数据、固定列数，附 UTF-8 BOM，便于 Excel 打开。
+- **历史轮次**：在「历史」中单独导出已归档轮次的图片、CSV 或归档 JSON，包括已关闭动作的历史。
+
 ## 数据备份
 
 训练设定、当前记录与历史轮次只存于**当前设备、当前浏览器的 localStorage**。应用不上传训练数据，无账号、无后台同步；更换设备、浏览器或域名需要手动迁移。
 
-- **导出**：「导出 → 导出备份文件（JSON）」。完整备份包含关闭动作的数据、主题偏好和动作开关。
+- **导出**：「备份与导出 → 导出完整备份（JSON）」。完整备份包含关闭动作的数据、主题偏好和动作开关。
 - **合并导入**：保留当前设定与开关，合并记录及历史轮次；重复导入同一文件不会重复添加。
 - **覆盖导入**：按备份恢复设定、开关和全部记录，替换现有数据。旧版备份没有开关时，默认启用两个动作。
-- **日常分享**：按需导出 PNG、CSV 或打印 / PDF；关闭动作不参与这些计划模块的默认导出，历史归档仍可单独导出。
+- **归档 JSON**：只包含所选历史轮次，导入时始终合并，不覆盖当前训练；旧版单独归档文件同样受到保护。迁移整机数据请使用完整备份。
 
 清理浏览器数据可能导致记录丢失，请定期备份。离线缓存只保存应用资源，不能替代训练数据备份。
 
@@ -101,11 +117,15 @@ ladder-progression/
 ├── manifest.webmanifest       # PWA 安装配置
 ├── sw.js                      # 应用离线缓存与更新
 ├── assets/
-│   ├── css/app.css            # 基础组件、响应式和导出样式
+│   ├── css/app.css            # 基础组件和响应式布局
 │   ├── css/workspace.css      # 紧凑工作区、主题与底部导航
+│   ├── css/export.css         # 导出表单、图片预览与打印文档
 │   ├── js/
 │   │   ├── core.js            # 计划与进退阶计算、备份校验
-│   │   ├── app.js             # 工作区、记录、主题、导出与本机存储
+│   │   ├── app.js             # 工作区、记录、主题与本机存储
+│   │   ├── export-model.js    # 数据快照、分页、CSV 与 ZIP
+│   │   ├── export-canvas.js   # 独立 Canvas 图片绘制
+│   │   ├── export-ui.js       # 预览、下载、分享与打印
 │   │   ├── theme-init.js      # 首次绘制前解析主题
 │   │   └── register-sw.js     # 注册离线缓存
 │   └── icons/                 # SVG 与安卓 / 苹果图标
@@ -114,6 +134,7 @@ ladder-progression/
 │   ├── serve.cjs              # 本地静态预览服务器
 │   └── generate-icons.ps1     # Windows 图标重建脚本
 ├── tests/                     # Node 内置测试，无测试依赖
+├── .nojekyll                  # GitHub Pages 跳过 Jekyll 的空标记
 └── LICENSE
 ```
 
@@ -149,7 +170,8 @@ node --test tests/*.test.cjs
 
 | 版本 | 更新 |
 | :--- | :--- |
-| **1.5.0** | 今日训练 / 周期计划 / 参数设置分屏、折叠规则与记录、中性色主题和纯色底部导航 |
+| **1.6.0** | 训练卡 / 周期计划 / 报告导出、分页预览与 ZIP、独立打印文档、规范 CSV、归档导入保护 |
+| 1.5.0 | 今日训练 / 周期计划 / 参数设置分屏、折叠规则与记录、中性色主题和纯色底部导航 |
 | 1.4.0 | 动作启用开关、安全区域与系统配色适配、源码目录整理及新版文档 |
 | 1.3.0 | 阶梯图标、安卓 / 苹果桌面图标、跟随系统主题 |
 | 1.2.0 | 训练工作台改版、打卡置顶、休息计时器、输入和备份校验 |

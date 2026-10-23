@@ -7,22 +7,23 @@
 
 <meta name="description" content="基于 10RM 开把重量，以「递增金字塔 + 双重递进」编排力量周期计划，并按每次训练的实际结果自动进退阶；卧推与深蹲各自独立。数据仅保存在本机浏览器。">
 <meta name="keywords" content="力量训练,递增金字塔,双重递进,10RM,卧推,深蹲,进退阶">
-<meta name="author" content="阶梯递进力量计划生成器 v1.5.0 (Ladder Progression Strength Planner)">
+<meta name="author" content="阶梯递进力量计划生成器 v1.6.0 (Ladder Progression Strength Planner)">
 <meta name="theme-color" id="themeColor" content="#f5f5f2">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" type="image/svg+xml" href="./assets/icons/icon.svg?v=1.5.0">
+<link rel="icon" type="image/svg+xml" href="./assets/icons/icon.svg?v=1.6.0">
 
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png?v=1.5.0">
-<link rel="apple-touch-icon" sizes="167x167" href="./assets/icons/apple-touch-icon-167.png?v=1.5.0">
-<link rel="apple-touch-icon" sizes="152x152" href="./assets/icons/apple-touch-icon-152.png?v=1.5.0">
-<script src="./assets/js/theme-init.js?v=1.5.0"></script>
+<link rel="apple-touch-icon" sizes="180x180" href="./assets/icons/apple-touch-icon.png?v=1.6.0">
+<link rel="apple-touch-icon" sizes="167x167" href="./assets/icons/apple-touch-icon-167.png?v=1.6.0">
+<link rel="apple-touch-icon" sizes="152x152" href="./assets/icons/apple-touch-icon-152.png?v=1.6.0">
+<script src="./assets/js/theme-init.js?v=1.6.0"></script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="阶梯递进">
-<link rel="stylesheet" href="./assets/css/app.css?v=1.5.0">
-<link rel="stylesheet" href="./assets/css/workspace.css?v=1.5.0">
+<link rel="stylesheet" href="./assets/css/app.css?v=1.6.0">
+<link rel="stylesheet" href="./assets/css/workspace.css?v=1.6.0">
+<link rel="stylesheet" href="./assets/css/export.css?v=1.6.0">
 
 </head>
 <body>
@@ -31,7 +32,7 @@
   <header class="top">
     <div class="hdrow">
       <div class="brand">
-        <img class="logo" src="./assets/icons/icon.svg?v=1.5.0" alt="阶梯递进图标" width="44" height="44">
+        <img class="logo" src="./assets/icons/icon.svg?v=1.6.0" alt="阶梯递进图标" width="44" height="44">
         <div>
           <h1>阶梯递进 <span class="brand-en">LADDER PROGRESSION</span></h1>
           <div class="sub">你的个人力量训练工作台</div>
@@ -85,45 +86,30 @@
   <section class="card no-print" id="mod-export">
     <h2>导出 <span class="tag">选择要导出的内容</span></h2>
 
-    <div class="expgrid">
-      <div>
-        <div class="blocktitle">导出模块</div>
-        <p class="hint" style="margin:-4px 0 13px">可分别勾选两个动作的内容；图片与打印只包含已勾选项。</p>
-        <div id="exportModules"></div>
-      </div>
-      <div>
-        <div class="blocktitle">输出设置</div>
-        <div class="grid" style="grid-template-columns:1fr; gap:12px">
-          <div class="field">
-            <label>输出分辨率</label>
-            <select id="pngScale">
-              <option value="1">1× 标准</option>
-              <option value="2" selected>2× 高清（推荐）</option>
-              <option value="3">3× 超清（文件较大）</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>配色方案</label>
-            <select id="pngBg">
-              <option value="auto" selected>跟随页面主题</option>
-              <option value="dark">固定深色</option>
-              <option value="light">固定浅色（适合打印）</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>图片标题</label>
-            <input type="text" id="pngTitle" value="阶梯递进力量计划">
-          </div>
-        </div>
-        <div class="actions" style="margin-top:16px">
-          <button class="primary" id="btnPng">导出为图片（PNG）</button>
-          <button id="btnPrint">打印 / 导出 PDF</button>
-          <button id="btnCsv">导出 CSV</button>
-          <button id="btnToggle">全选 / 全不选</button>
-        </div>
-        <p class="expmsg" id="exportMsg">图片与打印仅包含已勾选模块；CSV 取自各动作的「小循环编排」「周训练日程」「训练记录」。</p>
-      </div>
+    <p class="hint">选用途、动作和范围，生成后先预览，再保存或分享。图片与打印使用同一份数据快照。</p>
+    <div class="export-form">
+      <div class="field"><label for="exportPurpose">导出用途</label><select id="exportPurpose">
+        <option value="training">训练卡：下一次任务</option><option value="plan">周期计划：按小循环分图</option>
+        <option value="report">本轮训练报告：仅实际记录</option><option value="custom">自定义：选择具体内容</option>
+      </select></div>
+      <div class="field"><label for="exportLift">训练动作</label><select id="exportLift"><option value="enabled">全部已启用动作</option></select></div>
+      <div class="field" id="exportScopeField"><label for="exportScope">范围（训练卡始终为下一次）</label><select id="exportScope">
+        <option value="all">全部小循环</option><option value="current">当前小循环</option><option value="1">小循环 1</option><option value="2">小循环 2</option><option value="3">小循环 3</option><option value="4">小循环 4</option>
+      </select></div>
+      <div class="field"><label for="pngBg">图片配色</label><select id="pngBg"><option value="auto">跟随页面</option><option value="light">浅色</option><option value="dark">深色</option></select></div>
+      <div class="field"><label for="pngScale">图片清晰度</label><select id="pngScale"><option value="1">标准 1×</option><option value="2" selected>高清 2×</option><option value="3">超清 3×（按尺寸自动限制）</option></select></div>
+      <div class="field"><label for="pngTitle">标题</label><input type="text" id="pngTitle" maxlength="60" value="阶梯递进力量计划"></div>
     </div>
+    <div id="exportAdvanced" hidden>
+      <div id="exportModules"></div><button id="btnToggle">全选 / 全不选</button>
+    </div>
+    <div class="actions"><button class="primary" id="btnPng" data-export-generate>生成图片预览</button><button id="btnPrint" data-export-generate>打印 / 存为 PDF</button><button id="btnCancelExport" hidden>取消生成</button></div>
+    <p class="expmsg" id="exportMsg" role="status" aria-live="polite">按动作与小循环自动分页，每页最多 12 条；多张图片可打包下载。</p>
+    <details class="export-csv"><summary>导出表格数据（CSV）</summary>
+      <p class="hint">使用上方选择的动作与范围。每行一条数据，固定列数，方便 Excel 分析。</p>
+      <div class="field"><label for="csvType">数据类型</label><select id="csvType"><option value="plan">训练计划：含已完成与后续安排</option><option value="logs">实际训练记录：不含未来安排</option></select></div>
+      <div class="actions"><button id="btnCsv">下载 CSV</button></div>
+    </details>
 
     <div class="blocktitle" style="margin-top:26px">数据备份与转移</div>
     <p class="hint">把当前设定、全部训练记录、历史轮次打包成一个 JSON 文件；换电脑或换浏览器时，在新设备打开本页导入即可完整恢复。</p>
@@ -143,7 +129,7 @@
       </div>
       <div>
         <div class="actions" style="margin-top:0">
-          <button class="primary" id="btnBackup">导出备份文件（JSON）</button>
+          <button class="primary" id="btnBackup">导出完整备份（JSON）</button>
         </div>
         <p class="hint" id="backupInfo" style="margin:13px 0 0"></p>
       </div>
@@ -154,13 +140,26 @@
   </div>
   </main>
 
-  <footer class="site-foot">阶梯递进力量计划生成器 v1.5.0 · Ladder Progression · 更新于 2026-10-24 · 训练记录与历史轮次仅保存在本机浏览器，不会上传到任何服务器</footer>
+  <footer class="site-foot">阶梯递进力量计划生成器 v1.6.0 · Ladder Progression · 更新于 2026-10-24 · 训练记录与历史轮次仅保存在本机浏览器，不会上传到任何服务器</footer>
 
 </div>
 
-<script src="./assets/js/core.js?v=1.5.0"></script>
-<script src="./assets/js/app.js?v=1.5.0"></script>
 
-<script src="./assets/js/register-sw.js?v=1.5.0"></script>
+<dialog id="exportPreview" aria-labelledby="previewTitle">
+  <div class="preview-heading"><h2 id="previewTitle">图片预览</h2><button id="previewClose" aria-label="关闭预览">关闭</button></div>
+  <p id="previewInfo"></p>
+  <div class="preview-image"><img id="exportPreviewImage" alt="导出图片预览"></div>
+  <div class="preview-pagination"><button id="previewPrev">上一张</button><button id="previewNext">下一张</button></div>
+  <div class="preview-actions"><button class="primary" id="previewSave">保存当前图片</button><button id="previewZip">全部打包 ZIP</button><button id="previewShare" hidden>系统分享</button></div>
+  <p id="previewMessage" role="status" aria-live="polite"></p>
+</dialog>
+
+<script src="./assets/js/core.js?v=1.6.0"></script>
+<script src="./assets/js/export-model.js?v=1.6.0"></script>
+<script src="./assets/js/export-canvas.js?v=1.6.0"></script>
+<script src="./assets/js/export-ui.js?v=1.6.0"></script>
+<script src="./assets/js/app.js?v=1.6.0"></script>
+
+<script src="./assets/js/register-sw.js?v=1.6.0"></script>
 </body>
 </html>
